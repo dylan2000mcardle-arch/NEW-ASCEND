@@ -8,6 +8,7 @@ import HeroSection from "@/components/sections/HeroSection";
 import JawTransformSection from "@/components/sections/JawTransformSection";
 import BlackoutSection from "@/components/sections/BlackoutSection";
 import SocialProofSection from "@/components/sections/SocialProofSection";
+import QuizSection from "@/components/sections/QuizSection";
 import CTASection from "@/components/sections/CTASection";
 import Footer from "@/components/layout/Footer";
 
@@ -22,6 +23,7 @@ export default function Home() {
           <JawTransformSection />
           <BlackoutSection />
           <SocialProofSection />
+          <QuizSection />
           <CTASection />
         </main>
         <Footer />

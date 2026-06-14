@@ -40,7 +40,8 @@ export default function CTASection() {
             </motion.button>
 
             <motion.button
-              className="rounded-xl border border-white/10 px-10 py-4 font-mono text-sm uppercase tracking-[0.2em] text-foreground/40"
+              className="rounded-xl border px-10 py-4 font-mono text-sm uppercase tracking-[0.2em] text-foreground/40"
+              style={{ borderColor: "rgba(255, 255, 255, 0.1)" }}
               whileHover={{
                 scale: 1.03,
                 borderColor: "rgba(255, 255, 255, 0.2)",

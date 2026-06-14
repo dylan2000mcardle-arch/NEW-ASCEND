@@ -1,17 +1,29 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 
 const HeroScene = dynamic(() => import("./HeroScene"), { ssr: false });
 
 export default function HeroSection() {
+  const reduceMotion = useReducedMotion();
+
   return (
-    <section className="relative flex min-h-screen items-center justify-center overflow-hidden">
+    <section className="relative flex min-h-svh items-center justify-center overflow-hidden">
       {/* 3D Canvas */}
       <div className="absolute inset-0">
         <HeroScene />
       </div>
+
+      {/* Legibility scrim — keeps text readable over the liquid-glass scene */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(ellipse 70% 55% at 50% 50%, rgba(1,1,1,0.72) 0%, rgba(1,1,1,0.45) 45%, rgba(1,1,1,0) 80%)",
+        }}
+      />
 
       {/* Text overlay */}
       <div className="relative z-10 mx-auto max-w-5xl px-6 text-center">
@@ -20,13 +32,13 @@ export default function HeroSection() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.3 }}
         >
-          <p className="mb-4 font-mono text-xs uppercase tracking-[0.4em] text-cyan/70">
+          <p className="mb-4 font-mono text-xs uppercase tracking-[0.4em] text-cyan/80">
             Optimized Recovery Protocol
           </p>
           <h1 className="mb-6 font-mono text-5xl font-bold leading-tight tracking-tight text-white md:text-7xl lg:text-8xl">
             <span className="text-glow-cyan">ASCND</span>
           </h1>
-          <p className="mx-auto max-w-xl font-sans text-base leading-relaxed text-foreground/60 md:text-lg">
+          <p className="mx-auto max-w-xl font-sans text-base leading-relaxed text-foreground/75 md:text-lg">
             Clinical-grade recovery systems engineered for structural
             optimization. REM enhancement. Maxillofacial bio-hacking.
           </p>
@@ -38,44 +50,48 @@ export default function HeroSection() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.8 }}
         >
+          {/* Primary CTA */}
           <motion.button
-            className="rounded-xl border border-cyan/30 bg-cyan/10 px-8 py-3.5 font-mono text-sm uppercase tracking-[0.2em] text-cyan backdrop-blur-sm"
+            className="cursor-pointer rounded-xl bg-cyan px-8 py-3.5 font-mono text-sm font-bold uppercase tracking-[0.2em] text-background shadow-[0_0_30px_rgba(0,243,255,0.25)] outline-none transition-colors focus-visible:ring-2 focus-visible:ring-cyan focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             whileHover={{
               scale: 1.03,
-              borderColor: "rgba(0, 243, 255, 0.6)",
-              boxShadow: "0 0 30px rgba(0, 243, 255, 0.2)",
+              boxShadow: "0 0 45px rgba(0, 243, 255, 0.5)",
             }}
-            transition={{ type: "spring", stiffness: 400, damping: 25, delay: 0.06 }}
+            whileTap={{ scale: 0.98 }}
+            transition={{ type: "spring", stiffness: 400, damping: 25 }}
           >
             Begin Protocol
           </motion.button>
 
+          {/* Secondary CTA */}
           <motion.button
-            className="rounded-xl border border-white/10 px-8 py-3.5 font-mono text-sm uppercase tracking-[0.2em] text-foreground/50 backdrop-blur-sm"
+            className="cursor-pointer rounded-xl border px-8 py-3.5 font-mono text-sm uppercase tracking-[0.2em] text-foreground/70 outline-none transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-white/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            style={{ borderColor: "rgba(255, 255, 255, 0.15)" }}
             whileHover={{
               scale: 1.03,
-              borderColor: "rgba(255, 255, 255, 0.2)",
+              borderColor: "rgba(255, 255, 255, 0.35)",
             }}
-            transition={{ type: "spring", stiffness: 400, damping: 25, delay: 0.06 }}
+            whileTap={{ scale: 0.98 }}
+            transition={{ type: "spring", stiffness: 400, damping: 25 }}
           >
             View Research
           </motion.button>
         </motion.div>
-
-        {/* Scroll indicator */}
-        <motion.div
-          className="absolute bottom-8 left-1/2 -translate-x-1/2"
-          animate={{ y: [0, 8, 0] }}
-          transition={{ duration: 2, repeat: Infinity }}
-        >
-          <div className="flex flex-col items-center gap-2">
-            <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-foreground/30">
-              Scroll
-            </span>
-            <div className="h-8 w-[1px] bg-gradient-to-b from-cyan/40 to-transparent" />
-          </div>
-        </motion.div>
       </div>
+
+      {/* Scroll indicator — anchored to the section, not the text block */}
+      <motion.div
+        className="pointer-events-none absolute bottom-8 left-1/2 z-10 -translate-x-1/2"
+        animate={reduceMotion ? undefined : { y: [0, 8, 0] }}
+        transition={{ duration: 2, repeat: Infinity }}
+      >
+        <div className="flex flex-col items-center gap-2">
+          <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-foreground/40">
+            Scroll
+          </span>
+          <div className="h-8 w-px bg-gradient-to-b from-cyan/50 to-transparent" />
+        </div>
+      </motion.div>
     </section>
   );
 }

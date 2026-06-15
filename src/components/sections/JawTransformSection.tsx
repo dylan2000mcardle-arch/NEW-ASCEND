@@ -34,7 +34,7 @@ export default function JawTransformSection() {
   const textY = useTransform(scrollYProgress, [0.2, 0.35], [40, 0]);
 
   return (
-    <section ref={sectionRef} className="relative py-20 md:py-32">
+    <section id="protocol" ref={sectionRef} className="relative scroll-mt-20 py-20 md:py-32">
       <div className="mx-auto grid w-full max-w-7xl grid-cols-1 gap-8 px-6 md:gap-12 lg:grid-cols-2">
         {/* Text content — shown first on mobile, second on desktop */}
         <motion.div

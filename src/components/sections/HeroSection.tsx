@@ -65,7 +65,8 @@ export default function HeroSection() {
           </motion.a>
 
           {/* Secondary CTA */}
-          <motion.button
+          <motion.a
+            href="#research"
             className="cursor-pointer rounded-xl border px-8 py-3.5 font-mono text-sm uppercase tracking-[0.2em] text-foreground/70 outline-none transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-white/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             style={{ borderColor: "rgba(255, 255, 255, 0.15)" }}
             whileHover={{
@@ -76,7 +77,7 @@ export default function HeroSection() {
             transition={{ type: "spring", stiffness: 400, damping: 25 }}
           >
             View Research
-          </motion.button>
+          </motion.a>
         </motion.div>
       </div>
 

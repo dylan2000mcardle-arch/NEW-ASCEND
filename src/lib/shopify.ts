@@ -51,8 +51,13 @@ interface CartData {
   };
 }
 
-export async function createCheckout(variantIds: string[]): Promise<string> {
-  const lines = variantIds.map((id) => ({ merchandiseId: id, quantity: 1 }));
+export interface CheckoutLine {
+  variantId: string;
+  quantity: number;
+}
+
+export async function createCheckout(items: CheckoutLine[]): Promise<string> {
+  const lines = items.map((l) => ({ merchandiseId: l.variantId, quantity: l.quantity }));
   const data = await storefront<CartData>(
     `mutation CartCreate($lines: [CartLineInput!]!) {
       cartCreate(input: { lines: $lines }) {

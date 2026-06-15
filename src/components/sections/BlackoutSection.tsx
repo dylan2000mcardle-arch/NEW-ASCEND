@@ -15,15 +15,20 @@ export default function BlackoutSection() {
     // After blackout completes, show reveal text
     setTimeout(() => setShowReveal(true), 2800);
 
-    // Reset after 6 seconds
+    // Reset after 6 seconds, then flow the user into the quiz
     setTimeout(() => {
       setShowReveal(false);
-      setTimeout(() => setIsBlackout(false), 500);
+      setTimeout(() => {
+        setIsBlackout(false);
+        document
+          .getElementById("quiz")
+          ?.scrollIntoView({ behavior: "smooth" });
+      }, 500);
     }, 6000);
   }, []);
 
   return (
-    <section className="relative py-32">
+    <section id="research" className="relative scroll-mt-20 py-32">
       <div className="mx-auto max-w-4xl px-6">
         {/* Section header */}
         <motion.div

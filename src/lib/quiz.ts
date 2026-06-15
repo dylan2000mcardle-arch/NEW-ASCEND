@@ -2,7 +2,7 @@
 // Pure, deterministic logic — no fabricated data. Product prices/handles are
 // resolved from Shopify (Storefront API) at render/checkout time, not here.
 
-export type ProductId = "mask" | "mouth" | "nose" | "insoles";
+export type ProductId = "mask" | "mouth" | "nose" | "insoles" | "framer";
 
 export interface Product {
   id: ProductId;
@@ -37,6 +37,12 @@ export const PRODUCTS: Record<ProductId, Product> = {
     name: "Height Insoles",
     handle: "height-insoles",
     benefit: "A discreet lift for posture, presence, and daytime confidence.",
+  },
+  framer: {
+    id: "framer",
+    name: "ASCND Face Framer",
+    handle: "ascnd-face-framer",
+    benefit: "Targeted facial structure training for a sharper, more defined jawline.",
   },
 };
 
@@ -76,12 +82,12 @@ export const QUESTIONS: QuizQuestion[] = [
       {
         label: "Looksmaxxing",
         detail: "Jawline, posture, presence.",
-        weights: { mouth: 2, insoles: 3 },
+        weights: { mouth: 1, framer: 3, insoles: 2 },
       },
       {
         label: "Total optimization",
         detail: "All systems, no compromise.",
-        weights: { mask: 1, mouth: 1, nose: 1, insoles: 1 },
+        weights: { mask: 1, mouth: 1, nose: 1, insoles: 1, framer: 1 },
       },
     ],
   },
@@ -106,8 +112,8 @@ export const QUESTIONS: QuizQuestion[] = [
       },
       {
         label: "Confidence in the day",
-        detail: "Height and posture, not sleep.",
-        weights: { insoles: 3 },
+        detail: "Height, posture, and jawline.",
+        weights: { insoles: 3, framer: 2 },
       },
     ],
   },
@@ -136,7 +142,7 @@ export interface BundleResult {
   products: Product[];
 }
 
-const ALL_IDS: ProductId[] = ["mask", "mouth", "nose", "insoles"];
+const ALL_IDS: ProductId[] = ["mask", "mouth", "nose", "insoles", "framer"];
 
 function nameBundle(ids: ProductId[]): { name: string; description: string } {
   const set = new Set(ids);
@@ -159,10 +165,16 @@ function nameBundle(ids: ProductId[]): { name: string; description: string } {
       description: "Maximum oxygen, nasal breathing locked in all night.",
     };
   }
-  if (set.has("insoles")) {
+  if (set.has("framer") && (set.has("mouth") || set.has("insoles"))) {
+    return {
+      name: "The Structure Protocol",
+      description: "Jawline definition and presence — engineered for how you're built.",
+    };
+  }
+  if (set.has("insoles") || set.has("framer")) {
     return {
       name: "The Presence Protocol",
-      description: "Built for how you carry yourself — posture, height, and recovery.",
+      description: "Built for how you carry yourself — posture, height, and structure.",
     };
   }
   return {
@@ -176,7 +188,7 @@ function nameBundle(ids: ProductId[]): { name: string; description: string } {
  * answers[i] is the chosen option index for QUESTIONS[i].
  */
 export function recommendBundle(answers: number[]): BundleResult {
-  const scores: Record<ProductId, number> = { mask: 0, mouth: 0, nose: 0, insoles: 0 };
+  const scores: Record<ProductId, number> = { mask: 0, mouth: 0, nose: 0, insoles: 0, framer: 0 };
   let fullStack = false;
 
   answers.forEach((optionIndex, qi) => {

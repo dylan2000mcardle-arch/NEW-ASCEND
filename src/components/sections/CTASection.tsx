@@ -1,8 +1,35 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useCart } from "@/components/providers/CartProvider";
+import { PRODUCTS } from "@/lib/quiz";
 
 export default function CTASection() {
+  const { add, addMany } = useCart();
+
+  function getStack() {
+    addMany([
+      {
+        handle: PRODUCTS.mask.handle,
+        name: PRODUCTS.mask.name,
+        benefit: PRODUCTS.mask.benefit,
+      },
+      {
+        handle: PRODUCTS.mouth.handle,
+        name: PRODUCTS.mouth.name,
+        benefit: PRODUCTS.mouth.benefit,
+      },
+    ]);
+  }
+
+  function maskOnly() {
+    add({
+      handle: PRODUCTS.mask.handle,
+      name: PRODUCTS.mask.name,
+      benefit: PRODUCTS.mask.benefit,
+    });
+  }
+
   return (
     <section className="relative overflow-hidden py-32">
       {/* Gradient background */}
@@ -29,26 +56,30 @@ export default function CTASection() {
 
           <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
             <motion.button
-              className="rounded-xl border border-cyan bg-cyan/15 px-10 py-4 font-mono text-sm uppercase tracking-[0.2em] text-cyan"
+              onClick={getStack}
+              className="cursor-pointer rounded-xl border border-cyan bg-cyan/15 px-10 py-4 font-mono text-sm uppercase tracking-[0.2em] text-cyan outline-none focus-visible:ring-2 focus-visible:ring-cyan focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               whileHover={{
                 scale: 1.03,
                 boxShadow: "0 0 40px rgba(0, 243, 255, 0.3)",
               }}
+              whileTap={{ scale: 0.98 }}
               transition={{ type: "spring", stiffness: 400, damping: 25, delay: 0.06 }}
             >
-              Get the Stack — $49
+              Get the Stack
             </motion.button>
 
             <motion.button
-              className="rounded-xl border px-10 py-4 font-mono text-sm uppercase tracking-[0.2em] text-foreground/40"
-              style={{ borderColor: "rgba(255, 255, 255, 0.1)" }}
+              onClick={maskOnly}
+              className="cursor-pointer rounded-xl border px-10 py-4 font-mono text-sm uppercase tracking-[0.2em] text-foreground/70 outline-none transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-white/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+              style={{ borderColor: "rgba(255, 255, 255, 0.15)" }}
               whileHover={{
                 scale: 1.03,
-                borderColor: "rgba(255, 255, 255, 0.2)",
+                borderColor: "rgba(255, 255, 255, 0.35)",
               }}
+              whileTap={{ scale: 0.98 }}
               transition={{ type: "spring", stiffness: 400, damping: 25, delay: 0.06 }}
             >
-              Mask Only — $29
+              Mask Only
             </motion.button>
           </div>
 

@@ -57,7 +57,7 @@ const reviews: Review[] = [
 
 export default function SocialProofSection() {
   return (
-    <section className="py-32">
+    <section id="community" className="scroll-mt-20 py-32">
       <div className="mx-auto max-w-7xl px-6">
         <motion.div
           className="mb-16 text-center"

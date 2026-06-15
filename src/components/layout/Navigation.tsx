@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useCart } from "@/components/providers/CartProvider";
 
 const navLinks = [
   { label: "Protocol", href: "#protocol" },
@@ -9,9 +10,53 @@ const navLinks = [
   { label: "Community", href: "#community" },
 ];
 
+function CartButton({ onClick, count }: { onClick: () => void; count: number }) {
+  return (
+    <motion.button
+      onClick={onClick}
+      aria-label={`Open cart${count ? `, ${count} item${count > 1 ? "s" : ""}` : ""}`}
+      className="relative cursor-pointer rounded-lg p-2 text-foreground/60 outline-none transition-colors hover:text-cyan focus-visible:ring-2 focus-visible:ring-cyan"
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
+      transition={{ type: "spring", stiffness: 400, damping: 25 }}
+    >
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
+        <path d="M3 6h18" />
+        <path d="M16 10a4 4 0 0 1-8 0" />
+      </svg>
+      <AnimatePresence>
+        {count > 0 && (
+          <motion.span
+            key={count}
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            exit={{ scale: 0 }}
+            transition={{ type: "spring", stiffness: 500, damping: 25 }}
+            className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-cyan px-1 font-mono text-[10px] font-bold text-background"
+            style={{ boxShadow: "0 0 10px rgba(0,243,255,0.6)" }}
+          >
+            {count}
+          </motion.span>
+        )}
+      </AnimatePresence>
+    </motion.button>
+  );
+}
+
 export default function Navigation() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { count, open } = useCart();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
@@ -64,14 +109,18 @@ export default function Navigation() {
           >
             Get Stack
           </motion.a>
+
+          <CartButton onClick={open} count={count} />
         </div>
 
-        {/* Mobile toggle */}
-        <button
-          className="flex flex-col gap-1.5 md:hidden"
-          onClick={() => setMobileOpen(!mobileOpen)}
-          aria-label="Toggle menu"
-        >
+        {/* Mobile controls */}
+        <div className="flex items-center gap-2 md:hidden">
+          <CartButton onClick={open} count={count} />
+          <button
+            className="flex flex-col gap-1.5"
+            onClick={() => setMobileOpen(!mobileOpen)}
+            aria-label="Toggle menu"
+          >
           <motion.span
             className="block h-[1px] w-5 bg-foreground/60"
             animate={mobileOpen ? { rotate: 45, y: 4 } : { rotate: 0, y: 0 }}
@@ -84,7 +133,8 @@ export default function Navigation() {
             className="block h-[1px] w-5 bg-foreground/60"
             animate={mobileOpen ? { rotate: -45, y: -4 } : { rotate: 0, y: 0 }}
           />
-        </button>
+          </button>
+        </div>
       </div>
 
       {/* Mobile menu */}

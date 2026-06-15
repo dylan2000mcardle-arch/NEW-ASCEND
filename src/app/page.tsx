@@ -23,7 +23,7 @@ export default function Home() {
           <JawTransformSection />
           <BlackoutSection />
           <SocialProofSection />
-          <QuizSection />
+          <div id="quiz"><QuizSection /></div>
           <CTASection />
         </main>
         <Footer />

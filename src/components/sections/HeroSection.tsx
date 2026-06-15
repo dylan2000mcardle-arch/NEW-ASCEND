@@ -51,7 +51,8 @@ export default function HeroSection() {
           transition={{ duration: 0.8, delay: 0.8 }}
         >
           {/* Primary CTA */}
-          <motion.button
+          <motion.a
+            href="#quiz"
             className="cursor-pointer rounded-xl bg-cyan px-8 py-3.5 font-mono text-sm font-bold uppercase tracking-[0.2em] text-background shadow-[0_0_30px_rgba(0,243,255,0.25)] outline-none transition-colors focus-visible:ring-2 focus-visible:ring-cyan focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             whileHover={{
               scale: 1.03,
@@ -61,7 +62,7 @@ export default function HeroSection() {
             transition={{ type: "spring", stiffness: 400, damping: 25 }}
           >
             Begin Protocol
-          </motion.button>
+          </motion.a>
 
           {/* Secondary CTA */}
           <motion.button

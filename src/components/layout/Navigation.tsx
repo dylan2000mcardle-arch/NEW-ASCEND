@@ -53,7 +53,8 @@ export default function Navigation() {
             </motion.a>
           ))}
 
-          <motion.button
+          <motion.a
+            href="#quiz"
             className="rounded-lg border border-cyan/25 bg-cyan/5 px-5 py-2 font-mono text-xs uppercase tracking-[0.2em] text-cyan"
             whileHover={{
               borderColor: "rgba(0, 243, 255, 0.5)",
@@ -62,7 +63,7 @@ export default function Navigation() {
             transition={{ type: "spring", stiffness: 400, damping: 25, delay: 0.06 }}
           >
             Get Stack
-          </motion.button>
+          </motion.a>
         </div>
 
         {/* Mobile toggle */}
@@ -107,9 +108,9 @@ export default function Navigation() {
                   {link.label}
                 </a>
               ))}
-              <button className="mt-2 rounded-lg border border-cyan/25 bg-cyan/5 py-3 font-mono text-xs uppercase tracking-[0.2em] text-cyan">
+              <a href="#quiz" className="mt-2 rounded-lg border border-cyan/25 bg-cyan/5 py-3 font-mono text-xs uppercase tracking-[0.2em] text-cyan text-center" onClick={() => setMobileOpen(false)}>
                 Get Stack
-              </button>
+              </a>
             </div>
           </motion.div>
         )}

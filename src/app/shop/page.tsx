@@ -2,10 +2,25 @@ import type { Metadata } from "next";
 import { getAllProducts } from "@/lib/shopify";
 import ProductGrid from "@/components/shop/ProductGrid";
 
+const SHOP_DESC =
+  "Shop the ASCND recovery stack — blackout sleep mask, mouth tape, nose tape, height insoles, and the Face Framer. Buy single tools or the full protocol.";
+
 export const metadata: Metadata = {
-  title: "Shop — ASCND",
-  description:
-    "Clinical-grade recovery systems. Blackout masks, structural mouth tape, and facial optimization tools.",
+  title: "Shop",
+  description: SHOP_DESC,
+  alternates: { canonical: "/shop" },
+  openGraph: {
+    type: "website",
+    siteName: "ASCND",
+    title: "Shop — ASCND",
+    description: SHOP_DESC,
+    url: "/shop",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Shop — ASCND",
+    description: SHOP_DESC,
+  },
 };
 
 export const revalidate = 60;

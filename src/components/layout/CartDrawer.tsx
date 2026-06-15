@@ -3,6 +3,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useCart } from "@/components/providers/CartProvider";
 import ProductThumb from "@/components/ui/ProductThumb";
+import { BUNDLES } from "@/lib/quiz";
 
 function formatPrice(amount: string, currencyCode: string) {
   const value = Number(amount);
@@ -18,7 +19,7 @@ function formatPrice(amount: string, currencyCode: string) {
 }
 
 export default function CartDrawer() {
-  const { items, isOpen, close, remove, checkout, checkingOut, error } =
+  const { items, isOpen, close, remove, add, checkout, checkingOut, error } =
     useCart();
 
   const subtotal = items.reduce((sum, i) => {
@@ -26,6 +27,14 @@ export default function CartDrawer() {
     return sum + amount * i.quantity;
   }, 0);
   const currency = items.find((i) => i.price)?.price?.currencyCode ?? "GBP";
+
+  const full = BUNDLES.full;
+  const hasFullStack = items.some((i) => i.handle === full.handle);
+  const showUpsell = items.length > 0 && !hasFullStack;
+
+  function addFullStack() {
+    add({ handle: full.handle, name: full.name, benefit: full.description });
+  }
 
   return (
     <AnimatePresence>
@@ -158,6 +167,31 @@ export default function CartDrawer() {
                 className="border-t px-6 py-5"
                 style={{ borderColor: "rgba(255,255,255,0.08)" }}
               >
+                {showUpsell && (
+                  <button
+                    onClick={addFullStack}
+                    className="mb-4 flex w-full items-center justify-between gap-3 rounded-xl border px-4 py-3 text-left outline-none transition-colors focus-visible:ring-2 focus-visible:ring-cyan"
+                    style={{
+                      borderColor: "rgba(0,243,255,0.25)",
+                      backgroundColor: "rgba(0,243,255,0.05)",
+                    }}
+                  >
+                    <span className="min-w-0">
+                      <span className="block font-mono text-[11px] font-bold uppercase tracking-wider text-cyan">
+                        Complete the stack
+                      </span>
+                      <span className="mt-0.5 block text-xs leading-snug text-foreground/55">
+                        Add the Full Stack — every system, one SKU.
+                      </span>
+                    </span>
+                    <span
+                      aria-hidden
+                      className="shrink-0 rounded-lg border border-cyan/30 px-3 py-1.5 font-mono text-[11px] uppercase tracking-wider text-cyan"
+                    >
+                      + Add
+                    </span>
+                  </button>
+                )}
                 <div className="mb-4 flex items-center justify-between font-mono text-xs uppercase tracking-[0.2em] text-foreground/60">
                   <span>Subtotal</span>
                   <span className="text-white">

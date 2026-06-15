@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Space_Mono } from "next/font/google";
 import "./globals.css";
+import AppShell from "@/components/layout/AppShell";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -40,7 +41,7 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${spaceMono.variable} bg-background text-foreground antialiased`}
       >
-        {children}
+        <AppShell>{children}</AppShell>
       </body>
     </html>
   );

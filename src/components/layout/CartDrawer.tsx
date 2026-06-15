@@ -2,6 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { useCart } from "@/components/providers/CartProvider";
+import ProductThumb from "@/components/ui/ProductThumb";
 
 function formatPrice(amount: string, currencyCode: string) {
   const value = Number(amount);
@@ -99,7 +100,13 @@ export default function CartDrawer() {
                       style={{ borderColor: "rgba(255,255,255,0.08)" }}
                     >
                       <div className="flex items-start justify-between gap-3">
-                        <div className="min-w-0">
+                        <ProductThumb
+                          handle={item.handle}
+                          name={item.name}
+                          image={item.image}
+                          size={56}
+                        />
+                        <div className="min-w-0 flex-1">
                           <p className="font-mono text-sm font-bold uppercase tracking-wide text-white">
                             {item.name}
                           </p>

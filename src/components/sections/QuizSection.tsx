@@ -4,6 +4,7 @@ import { useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { QUESTIONS, recommendBundle, type BundleResult } from "@/lib/quiz";
 import { useCart } from "@/components/providers/CartProvider";
+import ProductThumb from "@/components/ui/ProductThumb";
 
 type Phase = "intro" | "questions" | "result";
 
@@ -205,15 +206,18 @@ export default function QuizSection() {
                     initial={reduceMotion ? false : { opacity: 0, x: -16 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.15 + i * 0.08, duration: 0.3 }}
-                    className="rounded-xl border bg-white/[0.02] px-5 py-4"
+                    className="flex items-center gap-4 rounded-xl border bg-white/[0.02] px-5 py-4"
                     style={{ borderColor: "rgba(255, 255, 255, 0.08)" }}
                   >
-                    <span className="block font-mono text-sm font-bold uppercase tracking-wide text-white">
-                      {product.name}
-                    </span>
-                    <span className="mt-1 block text-sm text-foreground/50">
-                      {product.benefit}
-                    </span>
+                    <ProductThumb handle={product.handle} name={product.name} size={48} />
+                    <div className="min-w-0">
+                      <span className="block font-mono text-sm font-bold uppercase tracking-wide text-white">
+                        {product.name}
+                      </span>
+                      <span className="mt-1 block text-sm text-foreground/50">
+                        {product.benefit}
+                      </span>
+                    </div>
                   </motion.li>
                 ))}
               </ul>

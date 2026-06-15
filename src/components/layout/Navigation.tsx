@@ -1,13 +1,15 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCart } from "@/components/providers/CartProvider";
 
 const navLinks = [
-  { label: "Protocol", href: "#protocol" },
-  { label: "Research", href: "#research" },
-  { label: "Community", href: "#community" },
+  { label: "Shop", href: "/shop" },
+  { label: "Protocol", href: "/#protocol" },
+  { label: "Research", href: "/#research" },
+  { label: "Community", href: "/#community" },
 ];
 
 function CartButton({ onClick, count }: { onClick: () => void; count: number }) {
@@ -77,12 +79,12 @@ export default function Navigation() {
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
         {/* Logo */}
-        <a
-          href="#"
+        <Link
+          href="/"
           className="font-mono text-lg font-bold tracking-[0.3em] text-white"
         >
           <span className="text-glow-cyan text-cyan">A</span>SCND
-        </a>
+        </Link>
 
         {/* Desktop links */}
         <div className="hidden items-center gap-8 md:flex">
@@ -99,7 +101,7 @@ export default function Navigation() {
           ))}
 
           <motion.a
-            href="#quiz"
+            href="/#quiz"
             className="rounded-lg border border-cyan/25 bg-cyan/5 px-5 py-2 font-mono text-xs uppercase tracking-[0.2em] text-cyan"
             whileHover={{
               borderColor: "rgba(0, 243, 255, 0.5)",
@@ -158,7 +160,7 @@ export default function Navigation() {
                   {link.label}
                 </a>
               ))}
-              <a href="#quiz" className="mt-2 rounded-lg border border-cyan/25 bg-cyan/5 py-3 font-mono text-xs uppercase tracking-[0.2em] text-cyan text-center" onClick={() => setMobileOpen(false)}>
+              <a href="/#quiz" className="mt-2 rounded-lg border border-cyan/25 bg-cyan/5 py-3 font-mono text-xs uppercase tracking-[0.2em] text-cyan text-center" onClick={() => setMobileOpen(false)}>
                 Get Stack
               </a>
             </div>

@@ -17,9 +17,34 @@ async function storefront<T>(query: string, variables: Record<string, unknown> =
   return json.data as T;
 }
 
+export interface Money {
+  amount: string;
+  currencyCode: string;
+}
+
 export interface ShopifyVariant {
   id: string;
-  price: { amount: string; currencyCode: string };
+  price: Money;
+}
+
+export interface ShopifyImage {
+  url: string;
+  altText: string | null;
+}
+
+export interface ShopifyProductCard {
+  handle: string;
+  title: string;
+  description: string;
+  featuredImage: ShopifyImage | null;
+  price: Money;
+  availableForSale: boolean;
+}
+
+export interface ShopifyProduct extends ShopifyProductCard {
+  descriptionHtml: string;
+  images: ShopifyImage[];
+  variantId: string;
 }
 
 interface ProductData {
@@ -42,6 +67,120 @@ export async function getProductVariant(handle: string): Promise<ShopifyVariant 
     { handle }
   );
   return data.productByHandle?.variants.edges[0]?.node ?? null;
+}
+
+export interface ProductMeta {
+  price: Money;
+  image: ShopifyImage | null;
+}
+
+interface MetaData {
+  productByHandle: {
+    featuredImage: ShopifyImage | null;
+    variants: { edges: { node: { price: Money } }[] };
+  } | null;
+}
+
+/** Lightweight fetch for cart/quiz thumbnails — price + featured image. */
+export async function getProductMeta(handle: string): Promise<ProductMeta | null> {
+  const data = await storefront<MetaData>(
+    `query GetMeta($handle: String!) {
+      productByHandle(handle: $handle) {
+        featuredImage { url altText }
+        variants(first: 1) { edges { node { price { amount currencyCode } } } }
+      }
+    }`,
+    { handle }
+  );
+  const p = data.productByHandle;
+  const price = p?.variants.edges[0]?.node.price;
+  if (!p || !price) return null;
+  return { price, image: p.featuredImage };
+}
+
+interface ProductCardNode {
+  handle: string;
+  title: string;
+  description: string;
+  featuredImage: ShopifyImage | null;
+  availableForSale: boolean;
+  priceRange: { minVariantPrice: Money };
+}
+
+interface AllProductsData {
+  products: { edges: { node: ProductCardNode }[] };
+}
+
+function toCard(node: ProductCardNode): ShopifyProductCard {
+  return {
+    handle: node.handle,
+    title: node.title,
+    description: node.description,
+    featuredImage: node.featuredImage,
+    availableForSale: node.availableForSale,
+    price: node.priceRange.minVariantPrice,
+  };
+}
+
+/** All products for the shop grid. */
+export async function getAllProducts(): Promise<ShopifyProductCard[]> {
+  const data = await storefront<AllProductsData>(
+    `query AllProducts {
+      products(first: 20, sortKey: TITLE) {
+        edges {
+          node {
+            handle
+            title
+            description
+            availableForSale
+            featuredImage { url altText }
+            priceRange { minVariantPrice { amount currencyCode } }
+          }
+        }
+      }
+    }`
+  );
+  return data.products.edges.map((e) => toCard(e.node));
+}
+
+interface FullProductData {
+  productByHandle:
+    | (ProductCardNode & {
+        descriptionHtml: string;
+        images: { edges: { node: ShopifyImage }[] };
+        variants: { edges: { node: { id: string } }[] };
+      })
+    | null;
+}
+
+/** Full product for the detail page. */
+export async function getProductByHandle(handle: string): Promise<ShopifyProduct | null> {
+  const data = await storefront<FullProductData>(
+    `query Product($handle: String!) {
+      productByHandle(handle: $handle) {
+        handle
+        title
+        description
+        descriptionHtml
+        availableForSale
+        featuredImage { url altText }
+        images(first: 8) { edges { node { url altText } } }
+        priceRange { minVariantPrice { amount currencyCode } }
+        variants(first: 1) { edges { node { id } } }
+      }
+    }`,
+    { handle }
+  );
+  const p = data.productByHandle;
+  if (!p) return null;
+  const variantId = p.variants.edges[0]?.node.id;
+  if (!variantId) return null;
+  return {
+    ...toCard(p),
+    descriptionHtml: p.descriptionHtml,
+    images: p.images.edges.map((e) => e.node),
+    variantId,
+  };
 }
 
 interface CartData {

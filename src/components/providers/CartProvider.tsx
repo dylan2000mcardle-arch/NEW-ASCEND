@@ -7,7 +7,12 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { getProductVariant, createCheckout } from "@/lib/shopify";
+import {
+  getProductVariant,
+  getProductMeta,
+  createCheckout,
+  type ShopifyImage,
+} from "@/lib/shopify";
 
 export interface CartLineInput {
   handle: string;
@@ -18,6 +23,7 @@ export interface CartLineInput {
 export interface CartItem extends CartLineInput {
   quantity: number;
   price?: { amount: string; currencyCode: string };
+  image?: ShopifyImage | null;
 }
 
 interface CartContextValue {
@@ -48,12 +54,14 @@ export default function CartProvider({ children }: { children: ReactNode }) {
   const [checkingOut, setCheckingOut] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchPrice = useCallback((handle: string) => {
-    getProductVariant(handle)
-      .then((v) => {
-        if (!v) return;
+  const fetchMeta = useCallback((handle: string) => {
+    getProductMeta(handle)
+      .then((m) => {
+        if (!m) return;
         setItems((prev) =>
-          prev.map((i) => (i.handle === handle ? { ...i, price: v.price } : i))
+          prev.map((i) =>
+            i.handle === handle ? { ...i, price: m.price, image: m.image } : i
+          )
         );
       })
       .catch(() => {});
@@ -72,9 +80,9 @@ export default function CartProvider({ children }: { children: ReactNode }) {
         isNew = true;
         return [...prev, { ...line, quantity: 1 }];
       });
-      if (isNew) fetchPrice(line.handle);
+      if (isNew) fetchMeta(line.handle);
     },
-    [fetchPrice]
+    [fetchMeta]
   );
 
   const add = useCallback(

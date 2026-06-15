@@ -11,6 +11,7 @@ import {
   getProductVariant,
   getProductMeta,
   createCheckout,
+  type Money,
   type ShopifyImage,
 } from "@/lib/shopify";
 
@@ -18,12 +19,18 @@ export interface CartLineInput {
   handle: string;
   name: string;
   benefit: string;
+  /** Explicit Shopify variant id (from a variant selector). */
+  variantId?: string;
+  /** Human-readable variant label, e.g. "7.5cm". Omitted for single-variant products. */
+  variantTitle?: string;
+  price?: Money;
+  image?: ShopifyImage | null;
 }
 
 export interface CartItem extends CartLineInput {
+  /** Resolved Shopify variant id — the cart line key. */
+  variantId: string;
   quantity: number;
-  price?: { amount: string; currencyCode: string };
-  image?: ShopifyImage | null;
 }
 
 interface CartContextValue {
@@ -36,7 +43,7 @@ interface CartContextValue {
   close: () => void;
   add: (line: CartLineInput) => void;
   addMany: (lines: CartLineInput[]) => void;
-  remove: (handle: string) => void;
+  remove: (variantId: string) => void;
   checkout: () => Promise<void>;
 }
 
@@ -54,35 +61,60 @@ export default function CartProvider({ children }: { children: ReactNode }) {
   const [checkingOut, setCheckingOut] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchMeta = useCallback((handle: string) => {
+  // Fill in missing image (and price, if not already set) for a line.
+  const fetchMeta = useCallback((handle: string, variantId: string) => {
     getProductMeta(handle)
       .then((m) => {
         if (!m) return;
         setItems((prev) =>
           prev.map((i) =>
-            i.handle === handle ? { ...i, price: m.price, image: m.image } : i
+            i.variantId === variantId
+              ? { ...i, price: i.price ?? m.price, image: i.image ?? m.image }
+              : i
           )
         );
       })
       .catch(() => {});
   }, []);
 
-  const addOne = useCallback(
-    (line: CartLineInput) => {
+  // Insert/increment a line that already has a resolved variantId.
+  const addResolved = useCallback(
+    (line: CartLineInput & { variantId: string }) => {
       let isNew = false;
       setItems((prev) => {
-        const existing = prev.find((i) => i.handle === line.handle);
+        const existing = prev.find((i) => i.variantId === line.variantId);
         if (existing) {
           return prev.map((i) =>
-            i.handle === line.handle ? { ...i, quantity: i.quantity + 1 } : i
+            i.variantId === line.variantId
+              ? { ...i, quantity: i.quantity + 1 }
+              : i
           );
         }
         isNew = true;
         return [...prev, { ...line, quantity: 1 }];
       });
-      if (isNew) fetchMeta(line.handle);
+      if (isNew && (!line.price || line.image === undefined)) {
+        fetchMeta(line.handle, line.variantId);
+      }
     },
     [fetchMeta]
+  );
+
+  const addOne = useCallback(
+    (line: CartLineInput) => {
+      if (line.variantId) {
+        addResolved({ ...line, variantId: line.variantId });
+        return;
+      }
+      // No explicit variant (e.g. quiz) — resolve the default/first variant.
+      getProductVariant(line.handle)
+        .then((v) => {
+          if (!v) return;
+          addResolved({ ...line, variantId: v.id, price: line.price ?? v.price });
+        })
+        .catch(() => {});
+    },
+    [addResolved]
   );
 
   const add = useCallback(
@@ -103,8 +135,8 @@ export default function CartProvider({ children }: { children: ReactNode }) {
     [addOne]
   );
 
-  const remove = useCallback((handle: string) => {
-    setItems((prev) => prev.filter((i) => i.handle !== handle));
+  const remove = useCallback((variantId: string) => {
+    setItems((prev) => prev.filter((i) => i.variantId !== variantId));
   }, []);
 
   const checkout = useCallback(async () => {
@@ -112,15 +144,10 @@ export default function CartProvider({ children }: { children: ReactNode }) {
     setCheckingOut(true);
     setError(null);
     try {
-      const variants = await Promise.all(
-        items.map((i) => getProductVariant(i.handle))
-      );
-      const lines = variants
-        .map((v, idx) =>
-          v ? { variantId: v.id, quantity: items[idx].quantity } : null
-        )
-        .filter((l): l is { variantId: string; quantity: number } => l !== null);
-      if (!lines.length) throw new Error("No products found in Shopify.");
+      const lines = items.map((i) => ({
+        variantId: i.variantId,
+        quantity: i.quantity,
+      }));
       const url = await createCheckout(lines);
       window.location.href = url;
     } catch (err) {

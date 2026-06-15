@@ -27,6 +27,25 @@ export interface ShopifyVariant {
   price: Money;
 }
 
+export interface SelectedOption {
+  name: string;
+  value: string;
+}
+
+export interface ShopifyVariantFull {
+  id: string;
+  title: string;
+  availableForSale: boolean;
+  price: Money;
+  selectedOptions: SelectedOption[];
+  image: ShopifyImage | null;
+}
+
+export interface ShopifyOption {
+  name: string;
+  values: string[];
+}
+
 export interface ShopifyImage {
   url: string;
   altText: string | null;
@@ -44,7 +63,10 @@ export interface ShopifyProductCard {
 export interface ShopifyProduct extends ShopifyProductCard {
   descriptionHtml: string;
   images: ShopifyImage[];
+  /** First/default variant id — fallback when no variant is selected. */
   variantId: string;
+  options: ShopifyOption[];
+  variants: ShopifyVariantFull[];
 }
 
 interface ProductData {
@@ -148,7 +170,8 @@ interface FullProductData {
     | (ProductCardNode & {
         descriptionHtml: string;
         images: { edges: { node: ShopifyImage }[] };
-        variants: { edges: { node: { id: string } }[] };
+        options: ShopifyOption[];
+        variants: { edges: { node: ShopifyVariantFull }[] };
       })
     | null;
 }
@@ -166,20 +189,35 @@ export async function getProductByHandle(handle: string): Promise<ShopifyProduct
         featuredImage { url altText }
         images(first: 8) { edges { node { url altText } } }
         priceRange { minVariantPrice { amount currencyCode } }
-        variants(first: 1) { edges { node { id } } }
+        options { name values }
+        variants(first: 100) {
+          edges {
+            node {
+              id
+              title
+              availableForSale
+              price { amount currencyCode }
+              selectedOptions { name value }
+              image { url altText }
+            }
+          }
+        }
       }
     }`,
     { handle }
   );
   const p = data.productByHandle;
   if (!p) return null;
-  const variantId = p.variants.edges[0]?.node.id;
+  const variants = p.variants.edges.map((e) => e.node);
+  const variantId = variants[0]?.id;
   if (!variantId) return null;
   return {
     ...toCard(p),
     descriptionHtml: p.descriptionHtml,
     images: p.images.edges.map((e) => e.node),
     variantId,
+    options: p.options,
+    variants,
   };
 }
 

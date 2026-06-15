@@ -95,7 +95,7 @@ export default function CartDrawer() {
                 <ul className="flex flex-col gap-3">
                   {items.map((item) => (
                     <li
-                      key={item.handle}
+                      key={item.variantId}
                       className="rounded-xl border bg-white/[0.02] px-4 py-4"
                       style={{ borderColor: "rgba(255,255,255,0.08)" }}
                     >
@@ -110,6 +110,11 @@ export default function CartDrawer() {
                           <p className="font-mono text-sm font-bold uppercase tracking-wide text-white">
                             {item.name}
                           </p>
+                          {item.variantTitle && (
+                            <p className="mt-0.5 font-mono text-[11px] uppercase tracking-wider text-cyan/70">
+                              {item.variantTitle}
+                            </p>
+                          )}
                           <p className="mt-1 text-sm leading-snug text-foreground/50">
                             {item.benefit}
                           </p>
@@ -124,7 +129,7 @@ export default function CartDrawer() {
                           </p>
                         </div>
                         <button
-                          onClick={() => remove(item.handle)}
+                          onClick={() => remove(item.variantId)}
                           aria-label={`Remove ${item.name}`}
                           className="cursor-pointer shrink-0 rounded-md p-1 text-foreground/40 outline-none transition-colors hover:text-red-400 focus-visible:ring-2 focus-visible:ring-red-400/50"
                         >

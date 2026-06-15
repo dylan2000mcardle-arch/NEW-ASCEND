@@ -73,6 +73,12 @@ export default function ProductDetail({ product }: { product: ShopifyProduct }) 
   }
 
   const price = selectedVariant?.price ?? product.price;
+  const compareAt = selectedVariant?.compareAtPrice ?? null;
+  const onSale =
+    !!compareAt && Number(compareAt.amount) > Number(price.amount);
+  const savings = onSale
+    ? (Number(compareAt!.amount) - Number(price.amount)).toFixed(2)
+    : null;
   const available = selectedVariant?.availableForSale ?? product.availableForSale;
 
   function addToCart() {
@@ -156,9 +162,21 @@ export default function ProductDetail({ product }: { product: ShopifyProduct }) 
             <h1 className="font-mono text-3xl font-bold text-white md:text-4xl">
               {product.title}
             </h1>
-            <p className="mt-4 font-mono text-xl text-cyan">
-              {formatPrice(price.amount, price.currencyCode)}
-            </p>
+            <div className="mt-4 flex flex-wrap items-baseline gap-3">
+              <p className="font-mono text-xl text-cyan">
+                {formatPrice(price.amount, price.currencyCode)}
+              </p>
+              {onSale && (
+                <>
+                  <p className="font-mono text-sm text-foreground/40 line-through">
+                    {formatPrice(compareAt!.amount, compareAt!.currencyCode)}
+                  </p>
+                  <span className="rounded-full border border-cyan/30 bg-cyan/10 px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-wider text-cyan">
+                    Save {formatPrice(savings!, price.currencyCode)}
+                  </span>
+                </>
+              )}
+            </div>
 
             {product.descriptionHtml ? (
               <div

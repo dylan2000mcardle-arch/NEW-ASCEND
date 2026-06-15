@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Space_Mono } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import AppShell from "@/components/layout/AppShell";
 
@@ -42,6 +43,7 @@ export default function RootLayout({
         className={`${inter.variable} ${spaceMono.variable} bg-background text-foreground antialiased`}
       >
         <AppShell>{children}</AppShell>
+        <Analytics />
       </body>
     </html>
   );

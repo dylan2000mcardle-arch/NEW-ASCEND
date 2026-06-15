@@ -13,13 +13,18 @@ export default function Footer() {
           </div>
 
           <div className="flex gap-8">
-            {["Protocol", "Research", "Community", "Support"].map((link) => (
+            {[
+              { label: "Shop", href: "/shop" },
+              { label: "Protocol", href: "/#protocol" },
+              { label: "Research", href: "/#research" },
+              { label: "Community", href: "/#community" },
+            ].map((link) => (
               <a
-                key={link}
-                href="#"
-                className="font-mono text-[10px] uppercase tracking-wider text-foreground/25 transition-colors hover:text-foreground/50"
+                key={link.label}
+                href={link.href}
+                className="font-mono text-[10px] uppercase tracking-wider text-foreground/40 transition-colors hover:text-cyan"
               >
-                {link}
+                {link.label}
               </a>
             ))}
           </div>

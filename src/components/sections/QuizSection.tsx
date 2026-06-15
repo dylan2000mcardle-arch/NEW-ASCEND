@@ -354,12 +354,36 @@ export default function QuizSection() {
               )}
 
               {selectedVariant && (
-                <p className="mb-6 text-center font-mono text-2xl font-bold text-cyan">
-                  {formatPrice(
-                    selectedVariant.price.amount,
-                    selectedVariant.price.currencyCode
-                  )}
-                </p>
+                <div className="mb-6 flex flex-wrap items-baseline justify-center gap-3">
+                  <p className="font-mono text-2xl font-bold text-cyan">
+                    {formatPrice(
+                      selectedVariant.price.amount,
+                      selectedVariant.price.currencyCode
+                    )}
+                  </p>
+                  {selectedVariant.compareAtPrice &&
+                    Number(selectedVariant.compareAtPrice.amount) >
+                      Number(selectedVariant.price.amount) && (
+                      <>
+                        <p className="font-mono text-base text-foreground/40 line-through">
+                          {formatPrice(
+                            selectedVariant.compareAtPrice.amount,
+                            selectedVariant.compareAtPrice.currencyCode
+                          )}
+                        </p>
+                        <span className="rounded-full border border-cyan/30 bg-cyan/10 px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-wider text-cyan">
+                          Save{" "}
+                          {formatPrice(
+                            (
+                              Number(selectedVariant.compareAtPrice.amount) -
+                              Number(selectedVariant.price.amount)
+                            ).toFixed(2),
+                            selectedVariant.price.currencyCode
+                          )}
+                        </span>
+                      </>
+                    )}
+                </div>
               )}
 
               <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">

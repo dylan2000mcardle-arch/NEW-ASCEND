@@ -2,32 +2,18 @@
 
 import { motion } from "framer-motion";
 import { useCart } from "@/components/providers/CartProvider";
-import { PRODUCTS } from "@/lib/quiz";
+import { BUNDLES } from "@/lib/quiz";
 
 export default function CTASection() {
-  const { add, addMany } = useCart();
+  const { add, open } = useCart();
 
   function getStack() {
-    addMany([
-      {
-        handle: PRODUCTS.mask.handle,
-        name: PRODUCTS.mask.name,
-        benefit: PRODUCTS.mask.benefit,
-      },
-      {
-        handle: PRODUCTS.mouth.handle,
-        name: PRODUCTS.mouth.name,
-        benefit: PRODUCTS.mouth.benefit,
-      },
-    ]);
-  }
-
-  function maskOnly() {
     add({
-      handle: PRODUCTS.mask.handle,
-      name: PRODUCTS.mask.name,
-      benefit: PRODUCTS.mask.benefit,
+      handle: BUNDLES.full.handle,
+      name: BUNDLES.full.name,
+      benefit: BUNDLES.full.description,
     });
+    open();
   }
 
   return (
@@ -49,27 +35,28 @@ export default function CTASection() {
             Ready to{" "}
             <span className="text-glow-cyan text-cyan">Ascend</span>?
           </h2>
-          <p className="mx-auto mb-10 max-w-md text-sm leading-relaxed text-foreground/50">
-            The ASCND Optimized Recovery Suite — Blackout Mask + Structural
-            Mouth Tape. Engineered for those who refuse to settle.
+          <p className="mx-auto mb-10 max-w-md text-sm leading-relaxed text-foreground/60">
+            The Full Stack — every system for sleep, breathing, structure, and
+            presence in one protocol. The complete kit, one checkout.
           </p>
 
           <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
             <motion.button
               onClick={getStack}
-              className="cursor-pointer rounded-xl border border-cyan bg-cyan/15 px-10 py-4 font-mono text-sm uppercase tracking-[0.2em] text-cyan outline-none focus-visible:ring-2 focus-visible:ring-cyan focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+              className="cursor-pointer rounded-xl bg-cyan px-10 py-4 font-mono text-sm font-bold uppercase tracking-[0.2em] text-background outline-none focus-visible:ring-2 focus-visible:ring-cyan focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+              style={{ boxShadow: "0 0 30px rgba(0,243,255,0.25)" }}
               whileHover={{
                 scale: 1.03,
-                boxShadow: "0 0 40px rgba(0, 243, 255, 0.3)",
+                boxShadow: "0 0 45px rgba(0, 243, 255, 0.5)",
               }}
               whileTap={{ scale: 0.98 }}
               transition={{ type: "spring", stiffness: 400, damping: 25, delay: 0.06 }}
             >
-              Get the Stack
+              Get the Full Stack
             </motion.button>
 
-            <motion.button
-              onClick={maskOnly}
+            <motion.a
+              href="#quiz"
               className="cursor-pointer rounded-xl border px-10 py-4 font-mono text-sm uppercase tracking-[0.2em] text-foreground/70 outline-none transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-white/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               style={{ borderColor: "rgba(255, 255, 255, 0.15)" }}
               whileHover={{
@@ -79,21 +66,22 @@ export default function CTASection() {
               whileTap={{ scale: 0.98 }}
               transition={{ type: "spring", stiffness: 400, damping: 25, delay: 0.06 }}
             >
-              Mask Only
-            </motion.button>
+              Not sure? Take the quiz
+            </motion.a>
           </div>
 
           {/* Trust signals */}
-          <div className="mt-12 flex flex-wrap items-center justify-center gap-6">
+          <div className="mt-12 flex flex-wrap items-center justify-center gap-x-6 gap-y-3">
             {[
               "Free Shipping",
-              "30-Day Protocol Guarantee",
+              "30-Day Guarantee",
               "Medical-Grade Materials",
             ].map((signal) => (
               <span
                 key={signal}
-                className="font-mono text-[10px] uppercase tracking-wider text-foreground/25"
+                className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-wider text-foreground/55"
               >
+                <span aria-hidden className="text-cyan/70">&#10003;</span>
                 {signal}
               </span>
             ))}

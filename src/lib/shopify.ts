@@ -37,6 +37,8 @@ export interface ShopifyVariantFull {
   title: string;
   availableForSale: boolean;
   price: Money;
+  /** Merchant-set "was" price. Only present when on sale. */
+  compareAtPrice: Money | null;
   selectedOptions: SelectedOption[];
   image: ShopifyImage | null;
 }
@@ -197,6 +199,7 @@ export async function getProductByHandle(handle: string): Promise<ShopifyProduct
               title
               availableForSale
               price { amount currencyCode }
+              compareAtPrice { amount currencyCode }
               selectedOptions { name value }
               image { url altText }
             }

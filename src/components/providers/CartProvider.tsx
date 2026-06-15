@@ -7,6 +7,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { track } from "@vercel/analytics";
 import {
   getProductVariant,
   getProductMeta,
@@ -120,6 +121,7 @@ export default function CartProvider({ children }: { children: ReactNode }) {
   const add = useCallback(
     (line: CartLineInput) => {
       addOne(line);
+      track("add_to_cart", { handle: line.handle, name: line.name });
       setError(null);
       setIsOpen(true);
     },
@@ -129,6 +131,7 @@ export default function CartProvider({ children }: { children: ReactNode }) {
   const addMany = useCallback(
     (lines: CartLineInput[]) => {
       lines.forEach(addOne);
+      track("add_to_cart", { count: lines.length });
       setError(null);
       setIsOpen(true);
     },
@@ -148,6 +151,12 @@ export default function CartProvider({ children }: { children: ReactNode }) {
         variantId: i.variantId,
         quantity: i.quantity,
       }));
+      const value = items.reduce(
+        (sum, i) => sum + (i.price ? Number(i.price.amount) * i.quantity : 0),
+        0
+      );
+      const units = items.reduce((sum, i) => sum + i.quantity, 0);
+      track("begin_checkout", { value, units });
       const url = await createCheckout(lines);
       window.location.href = url;
     } catch (err) {

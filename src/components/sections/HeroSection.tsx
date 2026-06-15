@@ -39,8 +39,8 @@ export default function HeroSection() {
             <span className="text-glow-cyan">ASCND</span>
           </h1>
           <p className="mx-auto max-w-xl font-sans text-base leading-relaxed text-foreground/75 md:text-lg">
-            Clinical-grade recovery systems engineered for structural
-            optimization. REM enhancement. Maxillofacial bio-hacking.
+            Sharper jawline, deeper sleep, taller presence — engineered into one
+            overnight recovery stack. Sleep on it, wake up optimized.
           </p>
         </motion.div>
 
@@ -61,7 +61,7 @@ export default function HeroSection() {
             whileTap={{ scale: 0.98 }}
             transition={{ type: "spring", stiffness: 400, damping: 25 }}
           >
-            Begin Protocol
+            Find Your Stack
           </motion.a>
 
           {/* Secondary CTA */}
@@ -79,6 +79,16 @@ export default function HeroSection() {
             View Research
           </motion.a>
         </motion.div>
+
+        <motion.p
+          className="mt-6 font-mono text-[11px] uppercase tracking-[0.25em] text-foreground/45"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8, delay: 1.1 }}
+        >
+          <span className="text-cyan/70">Free shipping</span> &middot; 30-day
+          guarantee &middot; Medical-grade
+        </motion.p>
       </div>
 
       {/* Scroll indicator — anchored to the section, not the text block */}

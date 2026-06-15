@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { QUESTIONS, recommendBundle, type BundleResult } from "@/lib/quiz";
+import { getProductVariant, createCheckout } from "@/lib/shopify";
 
 type Phase = "intro" | "questions" | "result";
 
@@ -12,6 +13,8 @@ export default function QuizSection() {
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<number[]>([]);
   const [result, setResult] = useState<BundleResult | null>(null);
+  const [cartLoading, setCartLoading] = useState(false);
+  const [cartError, setCartError] = useState<string | null>(null);
 
   const total = QUESTIONS.length;
 
@@ -20,6 +23,25 @@ export default function QuizSection() {
     setStep(0);
     setAnswers([]);
     setResult(null);
+    setCartError(null);
+  }
+
+  async function addToCart() {
+    if (!result) return;
+    setCartLoading(true);
+    setCartError(null);
+    try {
+      const variants = await Promise.all(
+        result.products.map((p) => getProductVariant(p.handle))
+      );
+      const ids = variants.filter(Boolean).map((v) => v!.id);
+      if (!ids.length) throw new Error("No products found in Shopify.");
+      const url = await createCheckout(ids);
+      window.location.href = url;
+    } catch (err) {
+      setCartError(err instanceof Error ? err.message : "Something went wrong.");
+      setCartLoading(false);
+    }
   }
 
   function answer(optionIndex: number) {
@@ -205,15 +227,20 @@ export default function QuizSection() {
                 ))}
               </ul>
 
+              {cartError && (
+                <p className="mb-4 text-center font-mono text-xs text-red-400">{cartError}</p>
+              )}
               <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
                 <motion.button
-                  className="cursor-pointer rounded-xl bg-cyan px-8 py-3.5 font-mono text-sm font-bold uppercase tracking-[0.2em] text-background outline-none transition-colors focus-visible:ring-2 focus-visible:ring-cyan focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                  onClick={addToCart}
+                  disabled={cartLoading}
+                  className="cursor-pointer rounded-xl bg-cyan px-8 py-3.5 font-mono text-sm font-bold uppercase tracking-[0.2em] text-background outline-none transition-opacity disabled:opacity-60 focus-visible:ring-2 focus-visible:ring-cyan focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                   style={{ boxShadow: "0 0 30px rgba(0,243,255,0.25)" }}
-                  whileHover={{ scale: 1.03, boxShadow: "0 0 45px rgba(0,243,255,0.5)" }}
-                  whileTap={{ scale: 0.98 }}
+                  whileHover={cartLoading ? {} : { scale: 1.03, boxShadow: "0 0 45px rgba(0,243,255,0.5)" }}
+                  whileTap={cartLoading ? {} : { scale: 0.98 }}
                   transition={{ type: "spring", stiffness: 400, damping: 25 }}
                 >
-                  Add Bundle to Cart
+                  {cartLoading ? "Adding..." : "Add Bundle to Cart"}
                 </motion.button>
                 <button
                   onClick={reset}

@@ -40,7 +40,7 @@ export const PRODUCTS: Record<ProductId, Product> = {
   },
   framer: {
     id: "framer",
-    name: "ASCND Face Framer",
+    name: "Face Framer",
     handle: "ascnd-face-framer",
     benefit: "Targeted facial structure training for a sharper, more defined jawline.",
   },
@@ -136,56 +136,58 @@ export const QUESTIONS: QuizQuestion[] = [
   },
 ];
 
+// Real Shopify bundle products (created via the Shopify Bundles app).
+// Each is a single SKU; `productIds` lists what's inside for display only.
+export type BundleId = "structure" | "presence" | "full";
+
+export interface Bundle {
+  id: BundleId;
+  name: string;
+  /** Shopify bundle product handle — added to cart as one SKU. */
+  handle: string;
+  description: string;
+  productIds: ProductId[];
+}
+
+export const BUNDLES: Record<BundleId, Bundle> = {
+  structure: {
+    id: "structure",
+    name: "The Structure Protocol",
+    handle: "the-structure-protocol",
+    description:
+      "Jawline, breathing, definition — three tools working the overnight window when your face remodels.",
+    productIds: ["framer", "mouth", "nose"],
+  },
+  presence: {
+    id: "presence",
+    name: "The Presence Protocol",
+    handle: "the-presence-protocol",
+    description:
+      "Deeper sleep, calmer breathing, taller presence. Recovery by night, stature by day.",
+    productIds: ["mask", "mouth", "insoles"],
+  },
+  full: {
+    id: "full",
+    name: "The Full Stack",
+    handle: "the-full-stack",
+    description:
+      "Every system — structure, sleep, breathing, presence. The complete protocol, fully equipped.",
+    productIds: ["mask", "mouth", "nose", "insoles", "framer"],
+  },
+};
+
 export interface BundleResult {
   name: string;
+  /** Bundle SKU handle — what gets added to cart. */
+  handle: string;
   description: string;
+  /** Components inside the bundle, for display. */
   products: Product[];
 }
 
-const ALL_IDS: ProductId[] = ["mask", "mouth", "nose", "insoles", "framer"];
-
-function nameBundle(ids: ProductId[]): { name: string; description: string } {
-  const set = new Set(ids);
-  if (ids.length === ALL_IDS.length) {
-    return {
-      name: "The Full Ascension",
-      description:
-        "The complete protocol. Every system working together — sleep, airflow, and presence.",
-    };
-  }
-  if (set.has("mask") && set.has("mouth")) {
-    return {
-      name: "The Sleep Protocol",
-      description: "Engineered for deeper, quieter, fully recovered nights.",
-    };
-  }
-  if (set.has("mouth") && set.has("nose")) {
-    return {
-      name: "The Airflow Protocol",
-      description: "Maximum oxygen, nasal breathing locked in all night.",
-    };
-  }
-  if (set.has("framer") && (set.has("mouth") || set.has("insoles"))) {
-    return {
-      name: "The Structure Protocol",
-      description: "Jawline definition and presence — engineered for how you're built.",
-    };
-  }
-  if (set.has("insoles") || set.has("framer")) {
-    return {
-      name: "The Presence Protocol",
-      description: "Built for how you carry yourself — posture, height, and structure.",
-    };
-  }
-  return {
-    name: "Your Protocol",
-    description: "A bundle matched to how you answered.",
-  };
-}
-
 /**
- * Recommend a bundle from the selected option index per question.
- * answers[i] is the chosen option index for QUESTIONS[i].
+ * Recommend one of the three real bundle SKUs from the selected option index
+ * per question. answers[i] is the chosen option index for QUESTIONS[i].
  */
 export function recommendBundle(answers: number[]): BundleResult {
   const scores: Record<ProductId, number> = { mask: 0, mouth: 0, nose: 0, insoles: 0, framer: 0 };
@@ -200,21 +202,20 @@ export function recommendBundle(answers: number[]): BundleResult {
     }
   });
 
-  let ids: ProductId[];
+  let id: BundleId;
   if (fullStack) {
-    ids = ALL_IDS;
+    id = "full";
   } else {
-    // Top scorers, minimum two, drop anything that scored nothing.
-    const ranked = ALL_IDS.filter((id) => scores[id] > 0).sort(
-      (a, b) => scores[b] - scores[a]
-    );
-    ids = ranked.slice(0, Math.max(2, Math.min(3, ranked.length)));
-    if (ids.length < 2) {
-      // Defensive fallback so a bundle always has at least two items.
-      ids = [...new Set([...ids, ...ALL_IDS])].slice(0, 2);
-    }
+    const structureScore = scores.framer + scores.nose;
+    const presenceScore = scores.mask + scores.insoles;
+    id = structureScore >= presenceScore ? "structure" : "presence";
   }
 
-  const { name, description } = nameBundle(ids);
-  return { name, description, products: ids.map((id) => PRODUCTS[id]) };
+  const bundle = BUNDLES[id];
+  return {
+    name: bundle.name,
+    handle: bundle.handle,
+    description: bundle.description,
+    products: bundle.productIds.map((pid) => PRODUCTS[pid]),
+  };
 }

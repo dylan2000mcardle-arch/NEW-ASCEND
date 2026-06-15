@@ -10,7 +10,7 @@ type Phase = "intro" | "questions" | "result";
 
 export default function QuizSection() {
   const reduceMotion = useReducedMotion();
-  const { addMany } = useCart();
+  const { add } = useCart();
   const [phase, setPhase] = useState<Phase>("intro");
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<number[]>([]);
@@ -27,13 +27,11 @@ export default function QuizSection() {
 
   function addToCart() {
     if (!result) return;
-    addMany(
-      result.products.map((p) => ({
-        handle: p.handle,
-        name: p.name,
-        benefit: p.benefit,
-      }))
-    );
+    add({
+      handle: result.handle,
+      name: result.name,
+      benefit: result.description,
+    });
   }
 
   function answer(optionIndex: number) {

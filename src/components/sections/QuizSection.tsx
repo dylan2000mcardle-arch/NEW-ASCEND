@@ -1,10 +1,33 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { QUESTIONS, recommendBundle, type BundleResult } from "@/lib/quiz";
+import { getProductByHandle, type ShopifyProduct } from "@/lib/shopify";
 import { useCart } from "@/components/providers/CartProvider";
 import ProductThumb from "@/components/ui/ProductThumb";
+
+function formatPrice(amount: string, currencyCode: string) {
+  const value = Number(amount);
+  if (Number.isNaN(value)) return "";
+  try {
+    return new Intl.NumberFormat(undefined, {
+      style: "currency",
+      currency: currencyCode,
+    }).format(value);
+  } catch {
+    return `${value} ${currencyCode}`;
+  }
+}
+
+// Single-variant products carry one "Title"/"Default Title" option — not a real choice.
+function hasRealOptions(p: ShopifyProduct) {
+  return !(
+    p.options.length === 1 &&
+    p.options[0].name === "Title" &&
+    p.options[0].values.length === 1
+  );
+}
 
 type Phase = "intro" | "questions" | "result";
 
@@ -15,23 +38,90 @@ export default function QuizSection() {
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<number[]>([]);
   const [result, setResult] = useState<BundleResult | null>(null);
+  const [bundle, setBundle] = useState<ShopifyProduct | null>(null);
+  const [selected, setSelected] = useState<Record<string, string>>({});
 
   const total = QUESTIONS.length;
+
+  // Load the live bundle product (variants/options) once we have a result.
+  useEffect(() => {
+    if (phase !== "result" || !result) return;
+    let cancelled = false;
+    setBundle(null);
+    getProductByHandle(result.handle)
+      .then((p) => {
+        if (cancelled || !p) return;
+        setBundle(p);
+        const dv = p.variants.find((v) => v.availableForSale) ?? p.variants[0];
+        const init: Record<string, string> = {};
+        dv?.selectedOptions.forEach((o) => {
+          init[o.name] = o.value;
+        });
+        setSelected(init);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [phase, result]);
+
+  const showOptions = bundle ? hasRealOptions(bundle) : false;
+
+  const selectedVariant = useMemo(() => {
+    if (!bundle) return null;
+    return (
+      bundle.variants.find((v) =>
+        v.selectedOptions.every((o) => selected[o.name] === o.value)
+      ) ??
+      bundle.variants.find((v) => v.availableForSale) ??
+      bundle.variants[0] ??
+      null
+    );
+  }, [bundle, selected]);
+
+  function valueAvailable(optionName: string, value: string) {
+    return (
+      !!bundle &&
+      bundle.variants.some(
+        (v) =>
+          v.availableForSale &&
+          v.selectedOptions.every((o) =>
+            o.name === optionName
+              ? o.value === value
+              : selected[o.name] === o.value
+          )
+      )
+    );
+  }
 
   function reset() {
     setPhase("intro");
     setStep(0);
     setAnswers([]);
     setResult(null);
+    setBundle(null);
+    setSelected({});
   }
 
   function addToCart() {
     if (!result) return;
-    add({
-      handle: result.handle,
-      name: result.name,
-      benefit: result.description,
-    });
+    if (bundle && selectedVariant) {
+      add({
+        handle: result.handle,
+        name: result.name,
+        benefit: result.description,
+        variantId: selectedVariant.id,
+        variantTitle: showOptions ? selectedVariant.title : undefined,
+        price: selectedVariant.price,
+        image: selectedVariant.image ?? bundle.featuredImage,
+      });
+    } else {
+      add({
+        handle: result.handle,
+        name: result.name,
+        benefit: result.description,
+      });
+    }
   }
 
   function answer(optionIndex: number) {
@@ -220,10 +310,63 @@ export default function QuizSection() {
                 ))}
               </ul>
 
+              {/* Variant selectors — pick size/options before adding */}
+              {showOptions && bundle && (
+                <div className="mb-8 flex flex-col gap-4">
+                  {bundle.options.map((option) => (
+                    <div key={option.name}>
+                      <p className="mb-2 text-center font-mono text-[11px] uppercase tracking-[0.3em] text-foreground/40">
+                        {option.name}
+                      </p>
+                      <div className="flex flex-wrap justify-center gap-2">
+                        {option.values.map((value) => {
+                          const isSelected = selected[option.name] === value;
+                          const inStock = valueAvailable(option.name, value);
+                          return (
+                            <button
+                              key={value}
+                              onClick={() =>
+                                setSelected((prev) => ({
+                                  ...prev,
+                                  [option.name]: value,
+                                }))
+                              }
+                              disabled={!inStock}
+                              aria-pressed={isSelected}
+                              className="cursor-pointer rounded-lg border px-4 py-2 font-mono text-xs uppercase tracking-wide text-white outline-none transition-colors disabled:cursor-not-allowed disabled:text-foreground/25 disabled:line-through focus-visible:ring-2 focus-visible:ring-cyan"
+                              style={{
+                                borderColor: isSelected
+                                  ? "rgba(0,243,255,0.6)"
+                                  : "rgba(255,255,255,0.12)",
+                                backgroundColor: isSelected
+                                  ? "rgba(0,243,255,0.08)"
+                                  : "rgba(255,255,255,0.02)",
+                              }}
+                            >
+                              {value}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {selectedVariant && (
+                <p className="mb-6 text-center font-mono text-2xl font-bold text-cyan">
+                  {formatPrice(
+                    selectedVariant.price.amount,
+                    selectedVariant.price.currencyCode
+                  )}
+                </p>
+              )}
+
               <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
                 <motion.button
                   onClick={addToCart}
-                  className="cursor-pointer rounded-xl bg-cyan px-8 py-3.5 font-mono text-sm font-bold uppercase tracking-[0.2em] text-background outline-none transition-opacity focus-visible:ring-2 focus-visible:ring-cyan focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                  disabled={!!bundle && !selectedVariant?.availableForSale}
+                  className="cursor-pointer rounded-xl bg-cyan px-8 py-3.5 font-mono text-sm font-bold uppercase tracking-[0.2em] text-background outline-none transition-opacity disabled:cursor-not-allowed disabled:opacity-40 focus-visible:ring-2 focus-visible:ring-cyan focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                   style={{ boxShadow: "0 0 30px rgba(0,243,255,0.25)" }}
                   whileHover={{ scale: 1.03, boxShadow: "0 0 45px rgba(0,243,255,0.5)" }}
                   whileTap={{ scale: 0.98 }}

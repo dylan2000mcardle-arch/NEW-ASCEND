@@ -152,7 +152,7 @@ export default function QuizSection() {
   return (
     <section
       id="quiz"
-      className="relative scroll-mt-16 overflow-hidden py-20 md:py-28"
+      className="relative scroll-mt-16 overflow-hidden py-12 md:py-28"
       aria-labelledby="quiz-heading"
     >
       {/* Ambient glow */}
@@ -168,7 +168,7 @@ export default function QuizSection() {
       <div className="relative mx-auto max-w-2xl px-6">
         {/* Page header — hidden on the result so the recommended stack + CTA sit at the top (less scroll on mobile) */}
         {phase !== "result" && (
-          <div className="mb-12 text-center">
+          <div className="mb-8 text-center md:mb-12">
             <p className="mb-4 font-mono text-xs uppercase tracking-[0.4em] text-cyan/70">
               Protocol Builder
             </p>
@@ -186,7 +186,7 @@ export default function QuizSection() {
 
         {/* Progress bar — only during questions */}
         {phase === "questions" && (
-          <div className="mb-10">
+          <div className="mb-6 md:mb-10">
             <div className="mb-3 flex items-center justify-between font-mono text-[10px] uppercase tracking-[0.3em] text-foreground/40">
               <span>
                 Step {step + 1} of {total}

@@ -59,7 +59,7 @@ export default function HeroSection() {
           transition={{ duration: 1, delay: 0.3 }}
         >
           <p className="mb-4 font-mono text-xs uppercase tracking-[0.4em] text-cyan/80">
-            Optimized Recovery Protocol
+            The Overnight Recovery Stack
           </p>
           <h1 className="mb-6 font-mono text-5xl font-bold leading-tight tracking-tight text-white md:text-7xl lg:text-8xl">
             <span className="text-glow-cyan">ASCND</span>

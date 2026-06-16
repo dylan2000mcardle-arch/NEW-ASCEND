@@ -178,6 +178,9 @@ export default function QuizSection() {
             >
               Find Your <span className="text-glow-cyan text-cyan">Stack</span>
             </h2>
+            <p className="mt-4 font-mono text-[11px] uppercase tracking-[0.3em] text-foreground/45">
+              {total} questions &middot; 30 seconds &middot; free
+            </p>
           </div>
         )}
 

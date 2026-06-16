@@ -64,9 +64,11 @@ export default function HeroSection() {
           <h1 className="mb-6 font-mono text-5xl font-bold leading-tight tracking-tight text-white md:text-7xl lg:text-8xl">
             <span className="text-glow-cyan">ASCND</span>
           </h1>
-          <p className="mx-auto max-w-xl font-sans text-base leading-relaxed text-foreground/75 md:text-lg">
-            Sharper jawline. Deeper sleep. Taller presence. One overnight
-            recovery stack. Sleep on it, wake up optimized.
+          <p className="mx-auto max-w-2xl font-sans text-xl font-semibold leading-snug text-white md:text-2xl">
+            Sharper jawline. Deeper sleep. Taller presence.
+          </p>
+          <p className="mx-auto mt-4 max-w-xl font-sans text-base leading-relaxed text-foreground/70">
+            One overnight recovery stack. Sleep on it, wake up optimized.
           </p>
         </motion.div>
 
@@ -79,7 +81,7 @@ export default function HeroSection() {
           {/* Primary CTA */}
           <motion.a
             href="#quiz"
-            className="cursor-pointer rounded-xl bg-cyan px-8 py-3.5 font-mono text-sm font-bold uppercase tracking-[0.2em] text-background shadow-[0_0_30px_rgba(0,243,255,0.25)] outline-none transition-colors focus-visible:ring-2 focus-visible:ring-cyan focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            className="w-full cursor-pointer rounded-xl bg-cyan px-8 py-3.5 text-center font-mono text-sm font-bold uppercase tracking-[0.2em] text-background shadow-[0_0_30px_rgba(0,243,255,0.25)] outline-none transition-colors focus-visible:ring-2 focus-visible:ring-cyan focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:w-auto"
             whileHover={{
               scale: 1.03,
               boxShadow: "0 0 45px rgba(0, 243, 255, 0.5)",
@@ -90,10 +92,10 @@ export default function HeroSection() {
             Find Your Stack
           </motion.a>
 
-          {/* Secondary CTA */}
+          {/* Secondary CTA — desktop only; mobile keeps a single primary action */}
           <motion.a
             href="#research"
-            className="cursor-pointer rounded-xl border px-8 py-3.5 font-mono text-sm uppercase tracking-[0.2em] text-foreground/70 outline-none transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-white/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            className="hidden cursor-pointer rounded-xl border px-8 py-3.5 font-mono text-sm uppercase tracking-[0.2em] text-foreground/70 outline-none transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-white/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:inline-block"
             style={{ borderColor: "rgba(255, 255, 255, 0.15)" }}
             whileHover={{
               scale: 1.03,

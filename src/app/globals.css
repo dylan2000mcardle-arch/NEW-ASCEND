@@ -37,6 +37,30 @@ body {
   overflow-x: hidden;
 }
 
+/* Desktop / laptop legibility — proportionally scale every rem-based
+   size (typography, padding, gaps) up ~12% from 1024px so body / labels /
+   button copy aren't squint-sized on big screens. Mobile + tablet stay at
+   the browser default 16px so layouts there are unchanged. */
+@media (min-width: 1024px) {
+  html {
+    font-size: 18px;
+  }
+}
+
+/* Bump arbitrary-px text utilities (text-[10px], text-[11px], text-[12px])
+   on desktop too — they bypass the rem scale above. */
+@media (min-width: 1024px) {
+  .text-\[10px\] {
+    font-size: 12px !important;
+  }
+  .text-\[11px\] {
+    font-size: 13px !important;
+  }
+  .text-\[12px\] {
+    font-size: 14px !important;
+  }
+}
+
 ::selection {
   background: rgba(0, 243, 255, 0.25);
   color: #ffffff;

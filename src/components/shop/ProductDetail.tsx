@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
@@ -34,7 +34,20 @@ function hasRealOptions(product: ShopifyProduct) {
 }
 
 export default function ProductDetail({ product }: { product: ShopifyProduct }) {
-  const { add } = useCart();
+  const { add, isOpen, open } = useCart();
+  const primaryCtaRef = useRef<HTMLButtonElement | null>(null);
+  const [primaryVisible, setPrimaryVisible] = useState(true);
+
+  useEffect(() => {
+    const el = primaryCtaRef.current;
+    if (!el || typeof IntersectionObserver === "undefined") return;
+    const io = new IntersectionObserver(
+      ([entry]) => setPrimaryVisible(entry.isIntersecting),
+      { threshold: 0.4 }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
   const gallery = product.images.length
     ? product.images
     : product.featuredImage
@@ -123,7 +136,7 @@ export default function ProductDetail({ product }: { product: ShopifyProduct }) 
           {/* Gallery */}
           <div>
             <div
-              className="relative aspect-square overflow-hidden rounded-2xl border bg-white/[0.03]"
+              className="relative aspect-[4/3] overflow-hidden rounded-2xl border bg-white/[0.03] md:aspect-square"
               style={{ borderColor: "rgba(255,255,255,0.08)" }}
             >
               {current ? (
@@ -210,17 +223,6 @@ export default function ProductDetail({ product }: { product: ShopifyProduct }) 
                 )}
             </div>
 
-            {product.descriptionHtml ? (
-              <div
-                className="mt-6 max-w-prose text-sm leading-relaxed text-foreground/60 [&_a]:text-cyan [&_li]:ml-4 [&_li]:list-disc [&_p]:mb-3"
-                dangerouslySetInnerHTML={{ __html: product.descriptionHtml }}
-              />
-            ) : (
-              <p className="mt-6 max-w-prose text-sm leading-relaxed text-foreground/60">
-                {product.description}
-              </p>
-            )}
-
             {/* Variant selectors */}
             {showOptions && (
               <div className="mt-8 flex flex-col gap-5">
@@ -266,6 +268,7 @@ export default function ProductDetail({ product }: { product: ShopifyProduct }) 
 
             <div className="mt-8">
               <motion.button
+                ref={primaryCtaRef}
                 onClick={addToCart}
                 disabled={!available}
                 className="w-full cursor-pointer rounded-xl bg-cyan px-8 py-4 font-mono text-sm font-bold uppercase tracking-[0.2em] text-background outline-none transition-opacity disabled:cursor-not-allowed disabled:opacity-40 focus-visible:ring-2 focus-visible:ring-cyan focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:w-auto"
@@ -306,6 +309,17 @@ export default function ProductDetail({ product }: { product: ShopifyProduct }) 
                 )}
               </ul>
 
+              {product.descriptionHtml ? (
+                <div
+                  className="mt-10 max-w-prose text-sm leading-relaxed text-foreground/60 [&_a]:text-cyan [&_li]:ml-4 [&_li]:list-disc [&_p]:mb-3"
+                  dangerouslySetInnerHTML={{ __html: product.descriptionHtml }}
+                />
+              ) : (
+                <p className="mt-10 max-w-prose text-sm leading-relaxed text-foreground/60">
+                  {product.description}
+                </p>
+              )}
+
               {upsellBundle && (
                 <div className="mt-6">
                   <StackUpsell
@@ -319,6 +333,47 @@ export default function ProductDetail({ product }: { product: ShopifyProduct }) 
           </div>
         </div>
       </div>
+
+      {/* Mobile sticky Add to Cart — appears once the main CTA scrolls out of view */}
+      <motion.div
+        aria-hidden={primaryVisible || isOpen}
+        className="pointer-events-none fixed inset-x-0 bottom-0 z-30 px-4 pb-[max(env(safe-area-inset-bottom),1rem)] pt-3 md:hidden"
+        style={{
+          background:
+            "linear-gradient(to top, rgba(1,1,1,0.92) 30%, rgba(1,1,1,0))",
+        }}
+        initial={false}
+        animate={{
+          y: !primaryVisible && !isOpen ? 0 : 120,
+          opacity: !primaryVisible && !isOpen ? 1 : 0,
+        }}
+        transition={{ type: "spring", stiffness: 380, damping: 30 }}
+      >
+        <div className="pointer-events-auto flex items-center gap-3">
+          <div className="flex flex-1 flex-col">
+            <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-foreground/50">
+              {showOptions && selectedVariant?.title
+                ? selectedVariant.title
+                : product.title}
+            </span>
+            <span className="font-mono text-base text-white">
+              {formatPrice(price.amount, price.currencyCode)}
+            </span>
+          </div>
+          <button
+            onClick={() => {
+              if (!available || !selectedVariant) return;
+              addToCart();
+              open();
+            }}
+            disabled={!available}
+            className="min-h-[48px] cursor-pointer rounded-xl bg-cyan px-6 py-3 font-mono text-xs font-bold uppercase tracking-[0.2em] text-background outline-none transition-opacity disabled:cursor-not-allowed disabled:opacity-40 focus-visible:ring-2 focus-visible:ring-cyan focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            style={{ boxShadow: "0 0 30px rgba(0,243,255,0.35)" }}
+          >
+            {available ? "Add to Cart" : "Sold Out"}
+          </button>
+        </div>
+      </motion.div>
     </section>
   );
 }

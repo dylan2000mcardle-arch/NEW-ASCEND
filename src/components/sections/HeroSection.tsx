@@ -67,10 +67,10 @@ export default function HeroSection() {
           <p className="mx-auto max-w-2xl font-sans text-xl font-semibold leading-snug text-white md:text-2xl">
             Sharper jawline. Deeper sleep. Taller presence.
           </p>
-          <p className="mx-auto mt-4 max-w-xl font-sans text-base leading-relaxed text-foreground/70">
+          <p className="mx-auto mt-4 hidden max-w-xl font-sans text-base leading-relaxed text-foreground/70 md:block">
             One overnight recovery stack. Sleep on it, wake up optimized.
           </p>
-          <p className="mx-auto mt-3 font-mono text-xs uppercase tracking-[0.25em] text-cyan/70">
+          <p className="mx-auto mt-3 hidden font-mono text-xs uppercase tracking-[0.25em] text-cyan/70 md:block">
             Single products from £4 · or build your full stack
           </p>
         </motion.div>
@@ -113,17 +113,29 @@ export default function HeroSection() {
 
         {/* Secondary path — browse the individual products directly */}
         <motion.div
+          className="mt-5 flex justify-center"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, delay: 1 }}
         >
-          <a
+          <motion.a
             href="/shop"
-            className="mt-5 inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.25em] text-foreground/55 outline-none transition-colors hover:text-cyan focus-visible:text-cyan"
+            className="inline-flex items-center gap-2 rounded-xl border px-6 py-3.5 font-mono text-[11px] uppercase tracking-[0.25em] text-white outline-none focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            style={{
+              borderColor: "rgba(255, 255, 255, 0.55)",
+              boxShadow: "0 0 24px rgba(255, 255, 255, 0.28)",
+            }}
+            whileHover={{
+              scale: 1.03,
+              boxShadow: "0 0 40px rgba(255, 255, 255, 0.55)",
+              borderColor: "rgba(255, 255, 255, 0.85)",
+            }}
+            whileTap={{ scale: 0.98 }}
+            transition={{ type: "spring", stiffness: 400, damping: 25 }}
           >
-            Or browse individual products
+            Browse individual products
             <span aria-hidden>&rarr;</span>
-          </a>
+          </motion.a>
         </motion.div>
 
         <motion.ul
@@ -132,11 +144,17 @@ export default function HeroSection() {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, delay: 1.1 }}
         >
-          {["Free shipping", "30-day guarantee", "Medical-grade"].map(
+          {[
+            { label: "Free shipping", mobile: true },
+            { label: "30-day guarantee", mobile: true },
+            { label: "Medical-grade", mobile: false },
+          ].map(
             (badge) => (
               <li
-                key={badge}
-                className="flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.2em] text-foreground/70"
+                key={badge.label}
+                className={`${
+                  badge.mobile ? "flex" : "hidden md:flex"
+                } items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.2em] text-foreground/70`}
               >
                 <svg
                   aria-hidden
@@ -150,7 +168,7 @@ export default function HeroSection() {
                     clipRule="evenodd"
                   />
                 </svg>
-                {badge}
+                {badge.label}
               </li>
             )
           )}

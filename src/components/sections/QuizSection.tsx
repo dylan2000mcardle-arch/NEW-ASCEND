@@ -152,7 +152,7 @@ export default function QuizSection() {
   return (
     <section
       id="quiz"
-      className="relative overflow-hidden py-32"
+      className="relative scroll-mt-16 overflow-hidden py-20 md:py-28"
       aria-labelledby="quiz-heading"
     >
       {/* Ambient glow */}
@@ -166,17 +166,20 @@ export default function QuizSection() {
       />
 
       <div className="relative mx-auto max-w-2xl px-6">
-        <div className="mb-12 text-center">
-          <p className="mb-4 font-mono text-xs uppercase tracking-[0.4em] text-cyan/70">
-            Protocol Builder
-          </p>
-          <h2
-            id="quiz-heading"
-            className="font-mono text-4xl font-bold text-white md:text-5xl"
-          >
-            Find Your <span className="text-glow-cyan text-cyan">Stack</span>
-          </h2>
-        </div>
+        {/* Page header — hidden on the result so the recommended stack + CTA sit at the top (less scroll on mobile) */}
+        {phase !== "result" && (
+          <div className="mb-12 text-center">
+            <p className="mb-4 font-mono text-xs uppercase tracking-[0.4em] text-cyan/70">
+              Protocol Builder
+            </p>
+            <h2
+              id="quiz-heading"
+              className="font-mono text-4xl font-bold text-white md:text-5xl"
+            >
+              Find Your <span className="text-glow-cyan text-cyan">Stack</span>
+            </h2>
+          </div>
+        )}
 
         {/* Progress bar — only during questions */}
         {phase === "questions" && (
@@ -287,29 +290,6 @@ export default function QuizSection() {
                 {result.description}
               </p>
 
-              <ul className="mb-8 flex flex-col gap-3">
-                {result.products.map((product, i) => (
-                  <motion.li
-                    key={product.id}
-                    initial={reduceMotion ? false : { opacity: 0, x: -16 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.15 + i * 0.08, duration: 0.3 }}
-                    className="flex items-center gap-4 rounded-xl border bg-white/[0.02] px-5 py-4"
-                    style={{ borderColor: "rgba(255, 255, 255, 0.08)" }}
-                  >
-                    <ProductThumb handle={product.handle} name={product.name} size={48} />
-                    <div className="min-w-0">
-                      <span className="block font-mono text-sm font-bold uppercase tracking-wide text-white">
-                        {product.name}
-                      </span>
-                      <span className="mt-1 block text-sm text-foreground/50">
-                        {product.benefit}
-                      </span>
-                    </div>
-                  </motion.li>
-                ))}
-              </ul>
-
               {/* Variant selectors — pick size/options before adding */}
               {showOptions && bundle && (
                 <div className="mb-8 flex flex-col gap-4">
@@ -405,6 +385,33 @@ export default function QuizSection() {
                   Start Over
                 </button>
               </div>
+
+              {/* What's inside — supporting detail, below the CTA so it doesn't push the buy button down */}
+              <p className="mb-3 mt-10 text-center font-mono text-[10px] uppercase tracking-[0.4em] text-foreground/40">
+                What&apos;s Inside
+              </p>
+              <ul className="flex flex-col gap-3">
+                {result.products.map((product, i) => (
+                  <motion.li
+                    key={product.id}
+                    initial={reduceMotion ? false : { opacity: 0, x: -16 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.15 + i * 0.08, duration: 0.3 }}
+                    className="flex items-center gap-4 rounded-xl border bg-white/[0.02] px-5 py-4"
+                    style={{ borderColor: "rgba(255, 255, 255, 0.08)" }}
+                  >
+                    <ProductThumb handle={product.handle} name={product.name} size={48} />
+                    <div className="min-w-0">
+                      <span className="block font-mono text-sm font-bold uppercase tracking-wide text-white">
+                        {product.name}
+                      </span>
+                      <span className="mt-1 block text-sm text-foreground/50">
+                        {product.benefit}
+                      </span>
+                    </div>
+                  </motion.li>
+                ))}
+              </ul>
             </div>
           ) : null}
         </motion.div>

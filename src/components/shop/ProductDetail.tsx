@@ -248,6 +248,31 @@ export default function ProductDetail({ product }: { product: ShopifyProduct }) 
               >
                 {available ? "Add to Cart" : "Sold Out"}
               </motion.button>
+
+              <ul className="mt-5 flex flex-wrap gap-x-5 gap-y-2">
+                {["Free shipping", "30-day guarantee", "Medical-grade"].map(
+                  (badge) => (
+                    <li
+                      key={badge}
+                      className="flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.18em] text-foreground/60"
+                    >
+                      <svg
+                        aria-hidden
+                        viewBox="0 0 20 20"
+                        className="h-3.5 w-3.5 shrink-0 text-cyan"
+                        fill="currentColor"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M16.7 5.3a1 1 0 0 1 0 1.4l-7.5 7.5a1 1 0 0 1-1.4 0L3.3 9.7a1 1 0 1 1 1.4-1.4l3.8 3.79 6.8-6.79a1 1 0 0 1 1.4 0Z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                      {badge}
+                    </li>
+                  )
+                )}
+              </ul>
             </div>
           </div>
         </div>

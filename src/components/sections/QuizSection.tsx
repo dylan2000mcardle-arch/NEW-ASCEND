@@ -289,13 +289,13 @@ export default function QuizSection() {
               <h3 className="mb-3 text-center font-mono text-3xl font-bold text-glow-cyan text-cyan md:text-4xl">
                 {result.name}
               </h3>
-              <p className="mx-auto mb-8 max-w-md text-center text-sm leading-relaxed text-foreground/60">
+              <p className="mx-auto mb-6 max-w-md text-center text-sm leading-relaxed text-foreground/60 md:mb-8">
                 {result.description}
               </p>
 
               {/* Variant selectors — pick size/options before adding */}
               {showOptions && bundle && (
-                <div className="mb-8 flex flex-col gap-4">
+                <div className="mb-6 flex flex-col gap-4 md:mb-8">
                   {bundle.options.map((option) => (
                     <div key={option.name}>
                       <p className="mb-2 text-center font-mono text-[11px] uppercase tracking-[0.3em] text-foreground/40">
@@ -389,29 +389,24 @@ export default function QuizSection() {
                 </button>
               </div>
 
-              {/* What's inside — supporting detail, below the CTA so it doesn't push the buy button down */}
-              <p className="mb-3 mt-10 text-center font-mono text-[10px] uppercase tracking-[0.4em] text-foreground/40">
+              {/* What's inside — compact 2-col grid below the CTA; supporting detail, kept short so the full result is viewable with minimal scroll on mobile */}
+              <p className="mb-3 mt-6 text-center font-mono text-[10px] uppercase tracking-[0.4em] text-foreground/40 md:mt-10">
                 What&apos;s Inside
               </p>
-              <ul className="flex flex-col gap-3">
+              <ul className="grid grid-cols-2 gap-2">
                 {result.products.map((product, i) => (
                   <motion.li
                     key={product.id}
-                    initial={reduceMotion ? false : { opacity: 0, x: -16 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.15 + i * 0.08, duration: 0.3 }}
-                    className="flex items-center gap-4 rounded-xl border bg-white/[0.02] px-5 py-4"
+                    initial={reduceMotion ? false : { opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.15 + i * 0.06, duration: 0.3 }}
+                    className="flex items-center gap-2.5 rounded-lg border bg-white/[0.02] px-3 py-2.5"
                     style={{ borderColor: "rgba(255, 255, 255, 0.08)" }}
                   >
-                    <ProductThumb handle={product.handle} name={product.name} size={48} />
-                    <div className="min-w-0">
-                      <span className="block font-mono text-sm font-bold uppercase tracking-wide text-white">
-                        {product.name}
-                      </span>
-                      <span className="mt-1 block text-sm text-foreground/50">
-                        {product.benefit}
-                      </span>
-                    </div>
+                    <ProductThumb handle={product.handle} name={product.name} size={36} />
+                    <span className="min-w-0 truncate font-mono text-[11px] font-bold uppercase tracking-wide text-white">
+                      {product.name}
+                    </span>
                   </motion.li>
                 ))}
               </ul>

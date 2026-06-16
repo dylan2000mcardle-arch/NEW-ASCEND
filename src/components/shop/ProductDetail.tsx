@@ -5,6 +5,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { useCart } from "@/components/providers/CartProvider";
+import StackUpsell from "@/components/shop/StackUpsell";
+import { upsellBundleForHandle } from "@/lib/bundles";
 import type { ShopifyProduct } from "@/lib/shopify";
 
 function formatPrice(amount: string, currencyCode: string) {
@@ -41,6 +43,7 @@ export default function ProductDetail({ product }: { product: ShopifyProduct }) 
   const current = gallery[active] ?? null;
 
   const showOptions = hasRealOptions(product);
+  const upsellBundle = upsellBundleForHandle(product.handle);
 
   // Default selection = the first available variant, else the first variant.
   const defaultVariant =
@@ -273,6 +276,16 @@ export default function ProductDetail({ product }: { product: ShopifyProduct }) 
                   )
                 )}
               </ul>
+
+              {upsellBundle && (
+                <div className="mt-6">
+                  <StackUpsell
+                    bundle={upsellBundle}
+                    ctaLabel={`Upgrade to ${upsellBundle.name}`}
+                    onUpgrade={(line) => add(line)}
+                  />
+                </div>
+              )}
             </div>
           </div>
         </div>

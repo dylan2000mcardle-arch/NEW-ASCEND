@@ -108,6 +108,21 @@ export default function HeroSection() {
           </motion.a>
         </motion.div>
 
+        {/* Secondary path — browse the individual products directly */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8, delay: 1 }}
+        >
+          <a
+            href="/shop"
+            className="mt-5 inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.25em] text-foreground/55 outline-none transition-colors hover:text-cyan focus-visible:text-cyan"
+          >
+            Or browse individual products
+            <span aria-hidden>&rarr;</span>
+          </a>
+        </motion.div>
+
         <motion.ul
           className="mt-8 flex flex-wrap items-center justify-center gap-x-5 gap-y-2.5"
           initial={{ opacity: 0 }}

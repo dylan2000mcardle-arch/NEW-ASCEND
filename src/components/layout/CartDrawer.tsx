@@ -3,6 +3,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useCart } from "@/components/providers/CartProvider";
 import ProductThumb from "@/components/ui/ProductThumb";
+import StackUpsell from "@/components/shop/StackUpsell";
 import { BUNDLES } from "@/lib/quiz";
 
 function formatPrice(amount: string, currencyCode: string) {
@@ -180,29 +181,14 @@ export default function CartDrawer() {
                 style={{ borderColor: "rgba(255,255,255,0.08)" }}
               >
                 {showUpsell && (
-                  <button
-                    onClick={swapToFullStack}
-                    className="mb-4 flex w-full items-center justify-between gap-3 rounded-xl border px-4 py-3 text-left outline-none transition-colors focus-visible:ring-2 focus-visible:ring-cyan"
-                    style={{
-                      borderColor: "rgba(0,243,255,0.25)",
-                      backgroundColor: "rgba(0,243,255,0.05)",
-                    }}
-                  >
-                    <span className="min-w-0">
-                      <span className="block font-mono text-[11px] font-bold uppercase tracking-wider text-cyan">
-                        Complete the stack
-                      </span>
-                      <span className="mt-0.5 block text-xs leading-snug text-foreground/55">
-                        Swap to the Full Stack — every system, one SKU.
-                      </span>
-                    </span>
-                    <span
-                      aria-hidden
-                      className="shrink-0 rounded-lg border border-cyan/30 px-3 py-1.5 font-mono text-[11px] uppercase tracking-wider text-cyan"
-                    >
-                      Swap
-                    </span>
-                  </button>
+                  <div className="mb-4">
+                    <StackUpsell
+                      bundle={full}
+                      ctaLabel="Swap to the Full Stack"
+                      onUpgrade={swapToFullStack}
+                      compact
+                    />
+                  </div>
                 )}
                 <div className="mb-4 flex items-center justify-between font-mono text-xs uppercase tracking-[0.2em] text-foreground/60">
                   <span>Subtotal</span>

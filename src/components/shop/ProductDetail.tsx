@@ -49,9 +49,6 @@ export default function ProductDetail({ product }: { product: ShopifyProduct }) 
   // If this product is itself a bundle, show its real saving vs buying the
   // members separately (bundle SKUs can't carry a compare-at price in Shopify).
   const selfBundle = bundleByHandle(product.handle);
-  const partsTotal = useBundleSavings(
-    selfBundle ? memberHandles(selfBundle) : []
-  );
 
   // Default selection = the first available variant, else the first variant.
   const defaultVariant =
@@ -63,6 +60,13 @@ export default function ProductDetail({ product }: { product: ShopifyProduct }) 
     });
     return init;
   });
+
+  // Variant-aware parts total — must match the currently-selected bundle tier.
+  const selectedValues = useMemo(() => Object.values(selected), [selected]);
+  const partsTotal = useBundleSavings(
+    selfBundle ? memberHandles(selfBundle) : [],
+    selectedValues
+  );
 
   const selectedVariant = useMemo(
     () =>

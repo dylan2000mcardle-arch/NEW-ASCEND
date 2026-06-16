@@ -105,6 +105,53 @@ interface MetaData {
   } | null;
 }
 
+export interface VariantPrice {
+  price: Money;
+  selectedOptions: SelectedOption[];
+  availableForSale: boolean;
+}
+
+interface VariantsData {
+  productByHandle: {
+    variants: {
+      edges: {
+        node: {
+          price: Money;
+          availableForSale: boolean;
+          selectedOptions: SelectedOption[];
+        };
+      }[];
+    };
+  } | null;
+}
+
+/**
+ * All variants of a product with price + selectedOptions. Used to compute
+ * variant-aware "buy separately" totals for bundles where the bundle's option
+ * choice (e.g. shoe size, strip count) should match the member's same option.
+ */
+export async function getProductVariants(handle: string): Promise<VariantPrice[] | null> {
+  const data = await storefront<VariantsData>(
+    `query GetVariants($handle: String!) {
+      productByHandle(handle: $handle) {
+        variants(first: 100) {
+          edges {
+            node {
+              price { amount currencyCode }
+              availableForSale
+              selectedOptions { name value }
+            }
+          }
+        }
+      }
+    }`,
+    { handle }
+  );
+  const p = data.productByHandle;
+  if (!p) return null;
+  return p.variants.edges.map((e) => e.node);
+}
+
 /** Lightweight fetch for cart/quiz thumbnails — price + featured image. */
 export async function getProductMeta(handle: string): Promise<ProductMeta | null> {
   const data = await storefront<MetaData>(

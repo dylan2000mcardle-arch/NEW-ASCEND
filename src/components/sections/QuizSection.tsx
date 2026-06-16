@@ -74,7 +74,10 @@ export default function QuizSection() {
     () => result?.products.map((p) => p.handle) ?? [],
     [result]
   );
-  const partsTotal = useBundleSavings(memberHandles);
+  // Pass the bundle's currently-selected option values so the parts total
+  // reflects the SAME variant tier (e.g. Insoles 7.5cm) — not just the cheapest.
+  const selectedValues = useMemo(() => Object.values(selected), [selected]);
+  const partsTotal = useBundleSavings(memberHandles, selectedValues);
 
   const selectedVariant = useMemo(() => {
     if (!bundle) return null;

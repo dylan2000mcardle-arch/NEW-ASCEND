@@ -65,8 +65,8 @@ export default function HeroSection() {
             <span className="text-glow-cyan">ASCND</span>
           </h1>
           <p className="mx-auto max-w-xl font-sans text-base leading-relaxed text-foreground/75 md:text-lg">
-            Sharper jawline, deeper sleep, taller presence — engineered into one
-            overnight recovery stack. Sleep on it, wake up optimized.
+            Sharper jawline. Deeper sleep. Taller presence. One overnight
+            recovery stack. Sleep on it, wake up optimized.
           </p>
         </motion.div>
 

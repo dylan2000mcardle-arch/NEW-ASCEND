@@ -3,6 +3,7 @@
 import { useRef, useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import { motion, useScroll, useTransform } from "framer-motion";
+import ProductVisual from "@/components/ui/ProductVisual";
 
 const JawScene = dynamic(() => import("./JawScene"), { ssr: false });
 
@@ -109,13 +110,10 @@ export default function JawTransformSection() {
               tapeAttach={tapeAttach}
             />
           ) : (
-            <div
-              aria-hidden
-              className="glass h-full w-full rounded-2xl"
-              style={{
-                background:
-                  "radial-gradient(80% 60% at 50% 40%, rgba(0,243,255,0.16) 0%, rgba(0,168,179,0.06) 40%, rgba(1,1,1,0) 75%)",
-              }}
+            <ProductVisual
+              handle="mouth-tape"
+              name="ASCND Mouth Tape"
+              className="h-full w-full"
             />
           )}
         </div>

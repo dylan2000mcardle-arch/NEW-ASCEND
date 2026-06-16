@@ -19,8 +19,16 @@ function formatPrice(amount: string, currencyCode: string) {
 }
 
 export default function CartDrawer() {
-  const { items, isOpen, close, remove, add, checkout, checkingOut, error } =
-    useCart();
+  const {
+    items,
+    isOpen,
+    close,
+    remove,
+    replaceWith,
+    checkout,
+    checkingOut,
+    error,
+  } = useCart();
 
   const subtotal = items.reduce((sum, i) => {
     const amount = i.price ? Number(i.price.amount) : 0;
@@ -32,8 +40,12 @@ export default function CartDrawer() {
   const hasFullStack = items.some((i) => i.handle === full.handle);
   const showUpsell = items.length > 0 && !hasFullStack;
 
-  function addFullStack() {
-    add({ handle: full.handle, name: full.name, benefit: full.description });
+  function swapToFullStack() {
+    replaceWith({
+      handle: full.handle,
+      name: full.name,
+      benefit: full.description,
+    });
   }
 
   return (
@@ -169,7 +181,7 @@ export default function CartDrawer() {
               >
                 {showUpsell && (
                   <button
-                    onClick={addFullStack}
+                    onClick={swapToFullStack}
                     className="mb-4 flex w-full items-center justify-between gap-3 rounded-xl border px-4 py-3 text-left outline-none transition-colors focus-visible:ring-2 focus-visible:ring-cyan"
                     style={{
                       borderColor: "rgba(0,243,255,0.25)",
@@ -181,14 +193,14 @@ export default function CartDrawer() {
                         Complete the stack
                       </span>
                       <span className="mt-0.5 block text-xs leading-snug text-foreground/55">
-                        Add the Full Stack — every system, one SKU.
+                        Swap to the Full Stack — every system, one SKU.
                       </span>
                     </span>
                     <span
                       aria-hidden
                       className="shrink-0 rounded-lg border border-cyan/30 px-3 py-1.5 font-mono text-[11px] uppercase tracking-wider text-cyan"
                     >
-                      + Add
+                      Swap
                     </span>
                   </button>
                 )}

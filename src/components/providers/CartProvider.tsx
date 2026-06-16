@@ -44,6 +44,8 @@ interface CartContextValue {
   close: () => void;
   add: (line: CartLineInput) => void;
   addMany: (lines: CartLineInput[]) => void;
+  /** Clear the cart and set it to a single line (used by the Full Stack swap). */
+  replaceWith: (line: CartLineInput) => void;
   remove: (variantId: string) => void;
   checkout: () => Promise<void>;
 }
@@ -138,6 +140,17 @@ export default function CartProvider({ children }: { children: ReactNode }) {
     [addOne]
   );
 
+  const replaceWith = useCallback(
+    (line: CartLineInput) => {
+      setItems([]);
+      addOne(line);
+      track("add_to_cart", { handle: line.handle, name: line.name, replace: 1 });
+      setError(null);
+      setIsOpen(true);
+    },
+    [addOne]
+  );
+
   const remove = useCallback((variantId: string) => {
     setItems((prev) => prev.filter((i) => i.variantId !== variantId));
   }, []);
@@ -179,6 +192,7 @@ export default function CartProvider({ children }: { children: ReactNode }) {
         close: () => setIsOpen(false),
         add,
         addMany,
+        replaceWith,
         remove,
         checkout,
       }}

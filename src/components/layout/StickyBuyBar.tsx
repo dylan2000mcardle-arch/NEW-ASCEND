@@ -16,6 +16,7 @@ export default function StickyBuyBar() {
   const reduceMotion = useReducedMotion();
   const { isOpen } = useCart();
   const [pastHero, setPastHero] = useState(false);
+  const [quizInView, setQuizInView] = useState(false);
 
   useEffect(() => {
     if (pathname !== "/") return;
@@ -34,9 +35,23 @@ export default function StickyBuyBar() {
     };
   }, [pathname]);
 
+  // Hide the bar while the quiz is on screen — pressing "Find Your Stack"
+  // scrolls there, and we don't want a duplicate CTA over the quiz itself.
+  useEffect(() => {
+    if (pathname !== "/") return;
+    const quiz = document.getElementById("quiz");
+    if (!quiz) return;
+    const io = new IntersectionObserver(
+      ([entry]) => setQuizInView(entry.isIntersecting),
+      { rootMargin: "-10% 0px -10% 0px" }
+    );
+    io.observe(quiz);
+    return () => io.disconnect();
+  }, [pathname]);
+
   if (pathname !== "/") return null;
 
-  const visible = pastHero && !isOpen;
+  const visible = pastHero && !isOpen && !quizInView;
 
   return (
     <motion.div
@@ -59,7 +74,7 @@ export default function StickyBuyBar() {
             Free shipping &middot; 30-day guarantee
           </p>
           <p className="truncate font-mono text-sm font-bold text-white">
-            Build your recovery stack
+            Build your stack
           </p>
         </div>
         <a

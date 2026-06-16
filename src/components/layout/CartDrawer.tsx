@@ -218,7 +218,31 @@ export default function CartDrawer() {
                 >
                   {checkingOut ? "Redirecting..." : "Checkout"}
                 </motion.button>
-                <p className="mt-3 text-center font-mono text-[10px] uppercase tracking-wider text-foreground/30">
+                <ul className="mt-3 flex items-center justify-center gap-x-4 gap-y-1">
+                  {["Free shipping", "30-day guarantee", "Medical-grade"].map(
+                    (badge) => (
+                      <li
+                        key={badge}
+                        className="flex items-center gap-1 font-mono text-[9px] uppercase tracking-wider text-foreground/45"
+                      >
+                        <svg
+                          aria-hidden
+                          viewBox="0 0 20 20"
+                          className="h-2.5 w-2.5 shrink-0 text-cyan"
+                          fill="currentColor"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M16.7 5.3a1 1 0 0 1 0 1.4l-7.5 7.5a1 1 0 0 1-1.4 0L3.3 9.7a1 1 0 1 1 1.4-1.4l3.8 3.79 6.8-6.79a1 1 0 0 1 1.4 0Z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                        {badge}
+                      </li>
+                    )
+                  )}
+                </ul>
+                <p className="mt-2 text-center font-mono text-[10px] uppercase tracking-wider text-foreground/30">
                   Secure checkout via Shopify
                 </p>
               </div>

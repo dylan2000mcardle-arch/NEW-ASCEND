@@ -18,7 +18,7 @@ const spaceMono = Space_Mono({
 });
 
 const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://new-ascend.vercel.app";
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://ascnds.co.uk";
 const DESCRIPTION =
   "Sharper jawline, deeper sleep, taller presence — engineered into one overnight recovery stack. Mouth tape, blackout mask, nose tape, height insoles and the Face Framer.";
 const TITLE = "ASCND — Recovery Stack for Sleep, Jawline & Presence";

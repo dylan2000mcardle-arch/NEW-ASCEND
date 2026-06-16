@@ -11,6 +11,17 @@ export default function JawTransformSection() {
   const [morphProgress, setMorphProgress] = useState(0);
   const [tapeVisible, setTapeVisible] = useState(false);
   const [tapeAttach, setTapeAttach] = useState(0);
+  // Desktop-only 3D — mobile never downloads the Three.js bundle.
+  const [show3D, setShow3D] = useState(false);
+
+  useEffect(() => {
+    const mobile =
+      window.innerWidth < 768 ||
+      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        navigator.userAgent
+      );
+    if (!mobile) setShow3D(true);
+  }, []);
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -89,13 +100,24 @@ export default function JawTransformSection() {
           </div>
         </motion.div>
 
-        {/* 3D Canvas — shown second on mobile, first on desktop */}
+        {/* 3D Canvas — desktop only; mobile gets a static glass panel (no Three.js) */}
         <div className="relative order-2 mx-auto h-64 w-full max-w-md md:h-80 lg:order-1 lg:h-auto lg:aspect-square lg:mx-0">
-          <JawScene
-            morphProgress={morphProgress}
-            tapeVisible={tapeVisible}
-            tapeAttach={tapeAttach}
-          />
+          {show3D ? (
+            <JawScene
+              morphProgress={morphProgress}
+              tapeVisible={tapeVisible}
+              tapeAttach={tapeAttach}
+            />
+          ) : (
+            <div
+              aria-hidden
+              className="glass h-full w-full rounded-2xl"
+              style={{
+                background:
+                  "radial-gradient(80% 60% at 50% 40%, rgba(0,243,255,0.16) 0%, rgba(0,168,179,0.06) 40%, rgba(1,1,1,0) 75%)",
+              }}
+            />
+          )}
         </div>
       </div>
     </section>

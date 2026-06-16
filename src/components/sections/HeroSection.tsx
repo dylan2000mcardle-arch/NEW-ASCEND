@@ -1,18 +1,44 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { useEffect, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 
 const HeroScene = dynamic(() => import("./HeroScene"), { ssr: false });
 
 export default function HeroSection() {
   const reduceMotion = useReducedMotion();
+  // Desktop-only 3D. Mobile gets a static gradient so the Three.js bundle is
+  // never downloaded — ad traffic is mostly phones and the 3D scene was the
+  // primary cause of slow first paint / high bounce. Starts false so the
+  // dynamic import only fires once we've confirmed a non-mobile device.
+  const [show3D, setShow3D] = useState(false);
+
+  useEffect(() => {
+    const mobile =
+      window.innerWidth < 768 ||
+      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        navigator.userAgent
+      );
+    if (!mobile) setShow3D(true);
+  }, []);
 
   return (
     <section className="relative flex min-h-svh items-center justify-center overflow-hidden">
-      {/* 3D Canvas */}
+      {/* 3D Canvas — desktop only; mobile gets a static gradient (no Three.js) */}
       <div className="absolute inset-0">
-        <HeroScene />
+        {show3D ? (
+          <HeroScene />
+        ) : (
+          <div
+            aria-hidden
+            className="h-full w-full"
+            style={{
+              background:
+                "radial-gradient(120% 80% at 50% 0%, rgba(0,243,255,0.18) 0%, rgba(0,168,179,0.08) 30%, rgba(1,1,1,0) 65%), #010101",
+            }}
+          />
+        )}
       </div>
 
       {/* Legibility scrim — keeps text readable over the liquid-glass scene */}

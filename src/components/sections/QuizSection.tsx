@@ -152,7 +152,7 @@ export default function QuizSection() {
   return (
     <section
       id="quiz"
-      className="relative scroll-mt-16 overflow-hidden py-12 md:py-28"
+      className="relative scroll-mt-8 overflow-hidden pt-4 pb-12 md:scroll-mt-16 md:py-28"
       aria-labelledby="quiz-heading"
     >
       {/* Ambient glow */}

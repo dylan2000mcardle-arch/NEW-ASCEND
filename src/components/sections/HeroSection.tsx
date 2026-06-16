@@ -70,6 +70,9 @@ export default function HeroSection() {
           <p className="mx-auto mt-4 max-w-xl font-sans text-base leading-relaxed text-foreground/70">
             One overnight recovery stack. Sleep on it, wake up optimized.
           </p>
+          <p className="mx-auto mt-3 font-mono text-xs uppercase tracking-[0.25em] text-cyan/70">
+            Single products from £4 · or build your full stack
+          </p>
         </motion.div>
 
         <motion.div

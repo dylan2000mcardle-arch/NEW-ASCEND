@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { QUESTIONS, recommendBundle, type BundleResult } from "@/lib/quiz";
 import { getProductByHandle, type ShopifyProduct } from "@/lib/shopify";
+import { useBundleSavings } from "@/lib/useBundleSavings";
 import { useCart } from "@/components/providers/CartProvider";
 import ProductThumb from "@/components/ui/ProductThumb";
 
@@ -66,6 +67,14 @@ export default function QuizSection() {
   }, [phase, result]);
 
   const showOptions = bundle ? hasRealOptions(bundle) : false;
+
+  // Live "buy separately" total for the recommended bundle's members — lets us
+  // show a real saving since Shopify bundle SKUs can't carry a compare-at price.
+  const memberHandles = useMemo(
+    () => result?.products.map((p) => p.handle) ?? [],
+    [result]
+  );
+  const partsTotal = useBundleSavings(memberHandles);
 
   const selectedVariant = useMemo(() => {
     if (!bundle) return null;
@@ -363,6 +372,32 @@ export default function QuizSection() {
                             ).toFixed(2),
                             selectedVariant.price.currencyCode
                           )}
+                        </span>
+                      </>
+                    )}
+                  {!(
+                    selectedVariant.compareAtPrice &&
+                    Number(selectedVariant.compareAtPrice.amount) >
+                      Number(selectedVariant.price.amount)
+                  ) &&
+                    partsTotal != null &&
+                    partsTotal > Number(selectedVariant.price.amount) && (
+                      <>
+                        <p className="font-mono text-base text-foreground/40 line-through">
+                          {formatPrice(
+                            String(partsTotal),
+                            selectedVariant.price.currencyCode
+                          )}
+                        </p>
+                        <span className="rounded-full border border-cyan/30 bg-cyan/10 px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-wider text-cyan">
+                          Save{" "}
+                          {formatPrice(
+                            (
+                              partsTotal - Number(selectedVariant.price.amount)
+                            ).toFixed(2),
+                            selectedVariant.price.currencyCode
+                          )}{" "}
+                          vs separately
                         </span>
                       </>
                     )}

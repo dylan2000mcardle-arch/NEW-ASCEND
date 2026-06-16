@@ -24,6 +24,15 @@ export function upsellBundleForHandle(handle: string): Bundle | null {
   return BUNDLES[PREFERRED_BUNDLE[id]];
 }
 
+const BUNDLE_BY_HANDLE: Record<string, Bundle> = Object.fromEntries(
+  Object.values(BUNDLES).map((b) => [b.handle, b])
+);
+
+/** The bundle a handle refers to, or null if the handle isn't a bundle. */
+export function bundleByHandle(handle: string): Bundle | null {
+  return BUNDLE_BY_HANDLE[handle] ?? null;
+}
+
 /** Shopify handles of the products contained in a bundle. */
 export function memberHandles(bundle: Bundle): string[] {
   return bundle.productIds.map((id) => PRODUCTS[id].handle);

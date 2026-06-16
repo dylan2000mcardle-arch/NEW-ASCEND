@@ -6,7 +6,8 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { useCart } from "@/components/providers/CartProvider";
 import StackUpsell from "@/components/shop/StackUpsell";
-import { upsellBundleForHandle } from "@/lib/bundles";
+import { upsellBundleForHandle, bundleByHandle, memberHandles } from "@/lib/bundles";
+import { useBundleSavings } from "@/lib/useBundleSavings";
 import type { ShopifyProduct } from "@/lib/shopify";
 
 function formatPrice(amount: string, currencyCode: string) {
@@ -44,6 +45,13 @@ export default function ProductDetail({ product }: { product: ShopifyProduct }) 
 
   const showOptions = hasRealOptions(product);
   const upsellBundle = upsellBundleForHandle(product.handle);
+
+  // If this product is itself a bundle, show its real saving vs buying the
+  // members separately (bundle SKUs can't carry a compare-at price in Shopify).
+  const selfBundle = bundleByHandle(product.handle);
+  const partsTotal = useBundleSavings(
+    selfBundle ? memberHandles(selfBundle) : []
+  );
 
   // Default selection = the first available variant, else the first variant.
   const defaultVariant =
@@ -179,6 +187,23 @@ export default function ProductDetail({ product }: { product: ShopifyProduct }) 
                   </span>
                 </>
               )}
+              {!onSale &&
+                partsTotal != null &&
+                partsTotal > Number(price.amount) && (
+                  <>
+                    <p className="font-mono text-sm text-foreground/40 line-through">
+                      {formatPrice(String(partsTotal), price.currencyCode)}
+                    </p>
+                    <span className="rounded-full border border-cyan/30 bg-cyan/10 px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-wider text-cyan">
+                      Save{" "}
+                      {formatPrice(
+                        (partsTotal - Number(price.amount)).toFixed(2),
+                        price.currencyCode
+                      )}{" "}
+                      vs separately
+                    </span>
+                  </>
+                )}
             </div>
 
             {product.descriptionHtml ? (
